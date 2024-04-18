@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = "mongodb://root:root12345@127.0.0.1:27017/chat-app?authSource=admin"
+}
+
+model User {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  email        String     @unique
+  password     String
+  name         String?
+  chatRoomIDs  String[]   @db.ObjectId
+  chatrooms    ChatRoom[] @relation(fields: [chatRoomIDs], references: [id])
+  messagesSent Message[]
+  friendIDs    String[]   @db.ObjectId
+  friends      User[]     @relation("friends", fields: [friendIDs], references: [id])
+  friendOfIDs  String[]   @db.ObjectId
+  friendOf     User[]     @relation("friends", fields: [friendOfIDs], references: [id])
+}
+
+model ChatRoom {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  memberIDs String[]  @db.ObjectId
+  members   User[]    @relation(fields: [memberIDs], references: [id])
+  createdAt DateTime  @default(now())
+  messages  Message[]
+}
+
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  chatRoomID String   @db.ObjectId
+  chatroom   ChatRoom @relation(fields: [chatRoomID], references: [id])
+  senderID   String   @db.ObjectId
+  sender     User     @relation(fields: [senderID], references: [id])
+  createdAt  DateTime @default(now())
+}

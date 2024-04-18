@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  express-server:
+    build:
+      context: .
+      args:
+        PORT: ${PORT}
+    env_file:
+      - .env.production
+    container_name: express
+    ports:
+      - '${PORT}:${PORT}'

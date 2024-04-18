@@ -1,0 +1,24 @@
+show dbs
+show tables
+listCollections; user;
+listCollections user;
+listCollections user
+list user
+show collections
+show collection
+show collections
+use chat-app
+show dbs
+mongosh
+show dbs
+show collection user
+show user
+show chat-app
+db.user.insertOne({})
+db.user.insert({})
+chat-app.user.insert({})
+cd ..
+show dbs
+use chat-app
+show dbs
+mongo
