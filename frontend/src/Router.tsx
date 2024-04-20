@@ -10,12 +10,18 @@ import {
   Routes,
   useRoutes,
 } from 'react-router-dom';
+import Layout from './components/Layout';
 
 const publicRoutes: RouteObject[] = [
   {
-    path: PUBLIC_ROUTE.LOGIN,
-    index: true,
-    element: <Login />,
+    element: <Layout />,
+    children: [
+      {
+        path: PUBLIC_ROUTE.LOGIN,
+        index: true,
+        element: <Login />,
+      },
+    ],
   },
   {
     path: '*',

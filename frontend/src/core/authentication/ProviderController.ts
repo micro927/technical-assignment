@@ -1,8 +1,6 @@
-import { fakeAvatarUrl } from '@/constants/dev';
 import authService from '@/services/auth';
 import { LoginRequestBody } from '@/services/types/request';
-import type { UserBasicInfo } from '@/services/types/schema';
-import { UserBasicInfo } from '@/types/authentication';
+import { UserBasicInfo } from '@/services/types/schema';
 import { AccessTokenPayload } from '@/types/utils';
 import {
   accessTokenDecode,
@@ -15,20 +13,6 @@ import {
 import { AxiosError, HttpStatusCode } from 'axios';
 import { useEffect, useState } from 'react';
 
-function transformUserBasicInfoToUserBasicInfo(
-  userBasicInfo?: UserBasicInfo | null,
-): UserBasicInfo | undefined {
-  if (userBasicInfo) {
-    return {
-      ...userBasicInfo,
-      displayName: `${userBasicInfo?.first_name} ${userBasicInfo?.last_name}`,
-      avatarURL: userBasicInfo.avatarURL ?? fakeAvatarUrl, // TODO: use real avatarURL instead
-      role: 'admin',
-    };
-  }
-  return undefined;
-}
-
 function useProviderController() {
   const getPayload = (token: string) => {
     const payload = accessTokenDecode(token);
@@ -38,22 +22,24 @@ function useProviderController() {
   };
   const localAccessToken = getAccessToken();
   const payload = getPayload(localAccessToken);
-  const localProfile = payload?.user;
+  const localUserBasicInfo = payload?.user;
 
   const [accessToken, setAccessToken] = useState<string | undefined>(
     localAccessToken,
   );
-  const [userInformation, setUserInformation] = useState(
-    transformUserBasicInfoToUserBasicInfo(localProfile),
-  );
+  const [userInformation, setUserInformation] = useState(localUserBasicInfo);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() =>
-    Boolean(localProfile?.id),
+    Boolean(localUserBasicInfo?.id),
   );
 
   const verify = () => {
     getMe()
       .then(({ data }) => {
-        setUserInformationState(transformUserBasicInfoToUserBasicInfo(data));
+        if (data) {
+          setUserInformationState(data);
+        } else {
+          logout();
+        }
       })
       .catch((error: AxiosError) => {
         if (error?.response?.status === HttpStatusCode.Unauthorized) {
@@ -126,9 +112,7 @@ function useProviderController() {
     try {
       const payload = accessTokenDecode(accessToken ?? '');
       if (payload?.user) {
-        setUserInformationState(
-          transformUserBasicInfoToUserBasicInfo(payload.user as UserBasicInfo),
-        );
+        setUserInformationState(payload.user as UserBasicInfo);
       }
     } catch {
       setUserInformationState(undefined);

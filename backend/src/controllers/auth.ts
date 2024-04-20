@@ -14,7 +14,7 @@ import {
   getAccessTokenSecret,
   getRefreshTokenSecret,
 } from '../utils/authToken.js';
-import db from '../utils/db.js';
+import prisma from '../utils/db.js';
 import getUserBasicInfoFromDatabase from '../utils/getUserBasicInfoFromDatabase.js';
 import { AppHandler } from '../types/app.js';
 
@@ -22,9 +22,10 @@ const login: AppHandler<LoginResponse, LoginRequestBody> = async (req, res) => {
   if (!(req.body?.email || req.body?.password))
     return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
   const { email, password } = req.body;
-  const users = await db.user.findUnique({
+  const users = await prisma.user.findUnique({
     where: { email },
   });
+
   if (users && (await bcrypt.compare(password, users.password))) {
     try {
       const userBasicInfo = await getUserBasicInfoFromDatabase(users.id);

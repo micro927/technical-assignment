@@ -5,10 +5,9 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "install:all": "npm i && npm --prefix ./frontend/ i && npm --prefix ./backend/ i",
+    "init": "npm i && npm --prefix ./frontend/ i && npm --prefix ./backend/ i && npm --prefix ./backend/ run prisma:generate",
     "dev:frontend": "npm --prefix ./frontend/ run dev",
     "dev:backend": "npm --prefix ./backend/ run dev",
-    "deploy:db": "docker-compose -f ./db/docker-compose.yml up -d --build",
     "lint": "eslint frontend --report-unused-disable-directives --max-warnings 0 && eslint backend --report-unused-disable-directives --max-warnings 0",
     "lint-staged": "lint-staged",
     "prepare": "husky",

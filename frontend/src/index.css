@@ -10,3 +10,11 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+.app-title {
+  @apply inline-block bg-gradient-to-r from-green-400 via-cyan-900 to-blue-500 bg-clip-text py-2 text-transparent;
+}
+
+hr {
+  @apply border-t-gray-200;
+}

@@ -15,7 +15,7 @@ import {
   ChatsResponse,
   CommonResponse,
 } from '../types/response.js';
-import db from '../utils/db.js';
+import prisma from '../utils/db.js';
 import { newChatMessageEventName } from '../utils/websocket.js';
 
 const postSendMessage: AppHandler<
@@ -29,12 +29,12 @@ const postSendMessage: AppHandler<
     const { id: senderID } = res.locals;
 
     const isAuthorizedChat =
-      (await db.chatRoom.findFirstOrThrow({
+      (await prisma.chatRoom.findFirstOrThrow({
         where: { memberIDs: { has: senderID } },
       })) ?? false;
     if (!isAuthorizedChat) return res.sendStatus(HTTP_STATUS.FORBIDDEN_403);
 
-    db.message
+    prisma.message
       .create({
         data: {
           content,
@@ -64,7 +64,7 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
   try {
     const { memberIDs } = req.body;
 
-    db.chatRoom
+    prisma.chatRoom
       .create({
         data: {
           memberIDs,
@@ -91,7 +91,7 @@ const getChat: AppHandler<
     const { id: userID } = res.locals;
     const { chatRoomID } = req.query;
 
-    db.chatRoom
+    prisma.chatRoom
       .findUniqueOrThrow(
         Object.assign(chatRoomSelectedFields, {
           where: {
@@ -115,7 +115,7 @@ const getChat: AppHandler<
 const getChats: AppHandler<ChatsResponse> = (_req, res) => {
   try {
     const { id: userID } = res.locals;
-    db.chatRoom
+    prisma.chatRoom
       .findMany(
         Object.assign(chatRoomsSelectedFields, {
           where: {

@@ -16,7 +16,7 @@ export const getAuthorizationHeader = () => {
 };
 
 export const createAxiosFetcher = (servicePath: string) => {
-  const baseURL = `${apiBaseURL}/${servicePath}/`;
+  const baseURL = `${apiBaseURL}${servicePath}`;
   return axios.create({
     baseURL: baseURL,
     headers: baseHeaders,

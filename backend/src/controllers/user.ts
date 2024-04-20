@@ -4,7 +4,7 @@ import { AppHandler, BasicObject } from '../types/app.js';
 import { UserBasicInfo } from '../types/data.js';
 import { UserInfoRequestParams } from '../types/request.js';
 import { UserInfoResponse } from '../types/response.js';
-import db from '../utils/db.js';
+import prisma from '../utils/db.js';
 import getUserBasicInfoFromDatabase from '../utils/getUserBasicInfoFromDatabase.js';
 import { parseBoolean } from '../utils/parseBoolean.js';
 
@@ -30,7 +30,7 @@ const getInfo: AppHandler<
 const getFriends: AppHandler<UserBasicInfo[]> = async (_req, res) => {
   try {
     const id = res.locals?.id ?? '';
-    db.user
+    prisma.user
       .findFirstOrThrow({
         select: { friends: userSelectedFields },
         where: { id },

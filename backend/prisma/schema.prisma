@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = "mongodb://root:root12345@127.0.0.1:27017/chat-app?authSource=admin"
+  url      = env("DATABASE_URL")
 }
 
 model User {
