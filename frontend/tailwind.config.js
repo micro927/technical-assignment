@@ -10,6 +10,9 @@ export default {
       colors: {
         dark: '#111114',
       },
+      fontSize: {
+        xxs: '10px',
+      },
     },
   },
   plugins: [],

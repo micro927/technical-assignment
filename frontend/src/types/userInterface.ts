@@ -1,5 +1,12 @@
 import { SetState } from './utils';
 
+export type Theme = 'light' | 'dark' | 'system';
+
+export type ThemeContextType = {
+  userTheme: Theme;
+  setTheme: (themeValue: Theme) => void;
+};
+
 export type NavbarContext = {
   open: boolean;
   mobileOpen: boolean;

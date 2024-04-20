@@ -14,11 +14,12 @@ function useLoginController() {
     email: '',
     password: '',
   };
-  const { control, handleSubmit, setError } = useForm<LoginFormValues>({
-    mode: 'onChange',
-    defaultValues,
-    resolver: zodResolver(schema),
-  });
+  const { control, handleSubmit, setError, formState } =
+    useForm<LoginFormValues>({
+      mode: 'onChange',
+      defaultValues,
+      resolver: zodResolver(schema),
+    });
 
   const onSubmit = handleSubmit((formData: LoginFormValues) => {
     setIsLoading(true);
@@ -31,17 +32,15 @@ function useLoginController() {
         .then(() => setIsLoading(false))
         .catch(() => {
           setIsLoading(false);
-          setError('email', {
+          setError('root', {
             type: 'validate',
-          });
-          setError('password', {
-            type: 'validate',
+            message: 'Login failed, please try again.',
           });
         });
     }, 200);
   });
 
-  return { isLoading, control, onSubmit };
+  return { isLoading, control, onSubmit, formState };
 }
 
 export default useLoginController;

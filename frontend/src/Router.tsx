@@ -31,23 +31,28 @@ const publicRoutes: RouteObject[] = [
 
 const privateRoutes: RouteObject[] = [
   {
-    path: PRIVATE_ROUTE.CHAT,
-    element: <Chat />,
+    element: <Layout />,
     children: [
       {
-        index: true,
-        path: '',
+        path: PRIVATE_ROUTE.CHAT,
         element: <Chat />,
+        children: [
+          {
+            index: true,
+            path: '',
+            element: <Chat />,
+          },
+          {
+            path: CHAT_ROUTE.ROOM,
+            element: <Chat />,
+          },
+        ],
       },
       {
-        path: CHAT_ROUTE.ROOM,
-        element: <Chat />,
+        path: '*',
+        element: <Navigate to={PRIVATE_ROUTE.CHAT} replace />,
       },
     ],
-  },
-  {
-    path: '*',
-    element: <Navigate to={PRIVATE_ROUTE.CHAT} replace />,
   },
 ];
 

@@ -12,9 +12,21 @@
 }
 
 .app-title {
-  @apply inline-block bg-gradient-to-r from-green-400 via-cyan-900 to-blue-500 bg-clip-text py-2 text-transparent;
+  @apply inline-block bg-gradient-to-r from-green-400 via-cyan-900 to-blue-500 bg-clip-text py-2 text-transparent dark:from-green-300 dark:via-cyan-800 dark:to-blue-400;
 }
 
-hr {
-  @apply border-t-gray-200;
+button.primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600 disabled:bg-blue-200;
+}
+button.secondary {
+  @apply bg-slate-500 text-white hover:bg-slate-700 disabled:bg-slate-200;
+}
+button.success {
+  @apply bg-dark;
+}
+button.warning {
+  @apply bg-dark;
+}
+button.error {
+  @apply bg-dark;
 }

@@ -22,13 +22,13 @@ const login: AppHandler<LoginResponse, LoginRequestBody> = async (req, res) => {
   if (!(req.body?.email || req.body?.password))
     return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
   const { email, password } = req.body;
-  const users = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (users && (await bcrypt.compare(password, users.password))) {
+  if (user && (await bcrypt.compare(password, user.password))) {
     try {
-      const userBasicInfo = await getUserBasicInfoFromDatabase(users.id);
+      const userBasicInfo = await getUserBasicInfoFromDatabase(user.id);
       const accessToken = generateAccessToken(userBasicInfo);
       const refreshToken = generateRefreshToken(userBasicInfo);
       res.send({ accessToken, refreshToken });

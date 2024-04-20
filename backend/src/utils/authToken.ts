@@ -4,10 +4,10 @@ import {
   RefreshTokenJWTPayload,
   UserBasicInfo,
 } from '../types/data.js';
-import { config } from 'dotenv';
+import { configDotenv } from 'dotenv';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 
-config();
+configDotenv({ path: `../.env` });
 const {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
