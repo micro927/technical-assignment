@@ -1,12 +1,10 @@
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import { Controller } from 'react-hook-form';
 import useLoginController from './controller';
 import { LoginRequestBody as LoginFormValues } from '@/services/types/request';
 
 function Login() {
-  const { control, formState, onSubmit } = useLoginController();
-  const { errors } = formState; //isValid, dirtyFields,
+  const { control, onSubmit } = useLoginController();
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-red-400">

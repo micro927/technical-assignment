@@ -14,12 +14,11 @@ function useLoginController() {
     email: '',
     password: '',
   };
-  const { control, formState, handleSubmit, setError } =
-    useForm<LoginFormValues>({
-      mode: 'onChange',
-      defaultValues,
-      resolver: zodResolver(schema),
-    });
+  const { control, handleSubmit, setError } = useForm<LoginFormValues>({
+    mode: 'onChange',
+    defaultValues,
+    resolver: zodResolver(schema),
+  });
 
   const onSubmit = handleSubmit((formData: LoginFormValues) => {
     setIsLoading(true);
@@ -42,7 +41,7 @@ function useLoginController() {
     }, 200);
   });
 
-  return { isLoading, control, formState, onSubmit };
+  return { isLoading, control, onSubmit };
 }
 
 export default useLoginController;
