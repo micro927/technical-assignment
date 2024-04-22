@@ -1,5 +1,5 @@
-import { AppHandler } from '../types/app.js';
-import { verifyAccessToken } from '../utils/authToken.js';
+import { AppHandler } from '@/types/app.js';
+import { verifyAccessToken } from '@/utils/authToken.js';
 
 const verifyToken: AppHandler = (req, res, next) => {
   const authHeader = req.headers['authorization'];

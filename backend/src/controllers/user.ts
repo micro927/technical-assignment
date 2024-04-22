@@ -1,12 +1,13 @@
-import { HTTP_STATUS } from '../constants/httpStatus.js';
-import { userSelectedFields } from '../constants/dataQueryFields.js';
-import { AppHandler, BasicObject } from '../types/app.js';
-import { UserBasicInfo } from '../types/data.js';
-import { UserInfoRequestParams } from '../types/request.js';
-import { UserInfoResponse } from '../types/response.js';
-import prisma from '../utils/db.js';
-import getUserBasicInfoFromDatabase from '../utils/getUserBasicInfoFromDatabase.js';
-import { parseBoolean } from '../utils/parseBoolean.js';
+import { userSelectedFields } from '@/constants/dataQueryFields.js';
+import { HTTP_STATUS } from '@/constants/httpStatus.js';
+import { AppHandler } from '@/types/app.js';
+import { UserBasicInfo } from '@/types/data.js';
+import { UserInfoRequestParams } from '@/types/request.js';
+import { UserInfoResponse } from '@/types/response.js';
+import prisma from '@/utils/db.js';
+import getUserBasicInfoFromDatabase from '@/utils/getUserBasicInfoFromDatabase.js';
+import { parseBoolean } from '@/utils/parseBoolean.js';
+import type { BasicObject } from '@/types/utils.js';
 
 const getInfo: AppHandler<
   UserInfoResponse,
@@ -45,6 +46,8 @@ const getFriends: AppHandler<UserBasicInfo[]> = async (_req, res) => {
 const userController = {
   getInfo,
   getFriends,
+  //TODO: postFriend
+  //TODO: getInfos
 };
 
 export default userController;

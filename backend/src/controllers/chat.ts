@@ -1,22 +1,24 @@
 import {
   chatRoomSelectedFields,
   chatRoomsSelectedFields,
-} from '../constants/dataQueryFields.js';
-import { HTTP_STATUS } from '../constants/httpStatus.js';
-import { AppHandler, BasicObject } from '../types/app.js';
+} from '@/constants/dataQueryFields.js';
+import { HTTP_STATUS } from '@/constants/httpStatus.js';
+import { AppHandler } from '@/types/app.js';
 import {
   ChatCreateRequestBody,
   ChatRequestParams,
   SendMessageRequestBody,
-} from '../types/request.js';
+} from '@/types/request.js';
 import {
   ChatCreateResponse,
   ChatResponse,
   ChatsResponse,
   CommonResponse,
-} from '../types/response.js';
-import prisma from '../utils/db.js';
-import { newChatMessageEventName } from '../utils/websocket.js';
+} from '@/types/response.js';
+import prisma from '@/utils/db.js';
+import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
+import { ChatRoomUpdatedData } from '@/types/socketData.js';
+import type { BasicObject } from '@/types/utils.js';
 
 const postSendMessage: AppHandler<
   CommonResponse,
@@ -43,10 +45,33 @@ const postSendMessage: AppHandler<
         },
       })
       .then((message) => {
-        res.locals.io.emit(
-          newChatMessageEventName(message.chatRoomID),
-          message,
+        const { chatRoomID, createdAt } = message;
+
+        res.locals.io
+          .to(chatRoomID)
+          .emit(SOCKET_EVENT.NEW_CHAT_MESSAGE, message);
+
+        const roomMemberClientIDs =
+          res.locals.io.sockets.adapter.rooms.get(chatRoomID);
+        const activeUserClientIDs = res.locals.io.sockets.adapter.rooms.get(
+          SOCKET_ROOM.ACTIVE_USER,
         );
+
+        if (roomMemberClientIDs && activeUserClientIDs) {
+          for (const clientID of roomMemberClientIDs) {
+            if (clientID in activeUserClientIDs) {
+              const chatRoomUpdatedData: ChatRoomUpdatedData = {
+                chatRoomID,
+                createdAt,
+              };
+
+              res.locals.io.emit(
+                SOCKET_EVENT.CHATROOM_UPDATED,
+                chatRoomUpdatedData,
+              );
+            }
+          }
+        }
         res.send({ success: true });
       })
       .catch(() => {

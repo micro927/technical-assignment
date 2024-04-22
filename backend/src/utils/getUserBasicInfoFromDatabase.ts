@@ -1,8 +1,8 @@
 import {
   userSelectedFields,
   userWithFriendSelectedFields,
-} from '../constants/dataQueryFields.js';
-import { UserBasicInfo } from '../types/data.js';
+} from '@/constants/dataQueryFields.js';
+import { UserBasicInfo } from '@/types/data.js';
 import prisma from './db.js';
 
 export const getUserBasicInfoFromDatabase = async (

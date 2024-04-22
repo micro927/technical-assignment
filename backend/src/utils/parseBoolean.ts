@@ -1,4 +1,4 @@
-import { BooleanString } from '../types/app.js';
+import { BooleanString } from '@/types/app.js';
 
 export const parseBoolean = (booleanString?: BooleanString) => {
   if (booleanString) {

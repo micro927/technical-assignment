@@ -1,7 +1,7 @@
+import authController from '@/controllers/auth.js';
+import verifyToken from '@/middleware/verifyToken.js';
+import { AUTH_ROUTE } from '@/constants/route.js';
 import express from 'express';
-import { AUTH_ROUTE } from '../constants/routePath.js';
-import authController from '../controllers/auth.js';
-import verifyToken from '../middleware/verifyToken.js';
 
 const authRouter = express.Router();
 const { login, refreshToken, me } = authController;

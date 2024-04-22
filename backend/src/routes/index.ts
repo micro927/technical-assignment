@@ -1,5 +1,5 @@
 import express from 'express';
-import { MAIN_ROUTE } from '../constants/routePath.js';
+import { MAIN_ROUTE } from '@/constants/route.js';
 import verifyToken from '../middleware/verifyToken.js';
 import authRouter from './auth.js';
 import chatRouter from './chat.js';

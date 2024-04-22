@@ -1,11 +1,11 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { HTTP_STATUS } from '@/constants/httpStatus.js';
 import {
   AccessTokenJWTPayload,
   RefreshTokenJWTPayload,
   UserBasicInfo,
-} from '../types/data.js';
+} from '@/types/data.js';
 import { configDotenv } from 'dotenv';
-import { HTTP_STATUS } from '../constants/httpStatus.js';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 configDotenv({ path: `../.env` });
 const {

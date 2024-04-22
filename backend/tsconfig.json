@@ -1,20 +1,21 @@
 {
-  "esModuleInterop": true,
   "compilerOptions": {
-    "module": "NodeNext",
     "target": "ESNext",
+    "module": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     "moduleResolution": "NodeNext",
     "outDir": "dist",
-
-    /* Linting */
+    "importsNotUsedAsValues": "remove",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noPropertyAccessFromIndexSignature": false,
+    "skipLibCheck": true
   },
-
   "exclude": ["node_modules", "dist"],
-
-  "include": ["src/**/*", "tests/**/*.spec.ts"],
-  "files": ["src/index.ts"]
+  "include": ["src/**/*.ts"]
 }

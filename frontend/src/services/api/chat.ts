@@ -3,14 +3,14 @@ import {
   ChatCreateRequestBody,
   ChatRequestParams,
   SendMessageRequestBody,
-} from './types/request';
+} from '../types/request';
 import {
   ChatCreateResponse,
   ChatResponse,
   ChatsResponse,
   CommonResponse,
-} from './types/response';
-import SERVICE from './types/route';
+} from '../types/response';
+import * as SERVICE from '@/services/types/route';
 
 const chatAPI = createAxiosFetcher(SERVICE.MAIN_ROUTE.CHAT);
 

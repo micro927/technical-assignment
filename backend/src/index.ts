@@ -1,8 +1,8 @@
+import { MAIN_ROUTE } from '@/constants/route.js';
 import cors, { CorsOptions } from 'cors';
 import { configDotenv } from 'dotenv';
 import express from 'express';
 import { createServer } from 'http';
-import { MAIN_ROUTE } from './constants/routePath.js';
 import { checkPrismaConnection } from './middleware/checkPrismaConnection.js';
 import createWebSocketMiddleware from './middleware/websocket.js';
 import router from './routes/index.js';
@@ -23,7 +23,28 @@ app.use(express.static('public'));
 app.use(checkPrismaConnection);
 app.use(websocket);
 app.use(router);
-app.get('/test', (_req, res) => {
+app.get('/test', async (_req, res) => {
+  console.log('gogo');
+
+  // const hashedPassword = await bcrypt.hash('bbbb', 10);
+  // try {
+  //   const a = await prisma.user.findMany();
+  //   console.log(a);
+  //   prisma.user
+  //     .create({
+  //       data: {
+  //         email: 'bbbb@example.com',
+  //         password: hashedPassword,
+  //         name: 'Mr. B',
+  //       },
+  //     })
+  //     .then((a) => {
+  //       console.log('-----------------', a);
+  //     });
+  //   res.send({ success: true });
+  // } catch (e) {
+  //   console.log(e);
+  // }
   res.send({ success: true });
 });
 

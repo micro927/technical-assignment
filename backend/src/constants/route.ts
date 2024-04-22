@@ -22,3 +22,5 @@ export enum CHAT_ROUTE {
   CHAT = '/:id',
   SEND_MESSAGE = '/send-message',
 }
+
+console.log();

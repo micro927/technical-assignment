@@ -1,4 +1,4 @@
-import authService from '@/services/auth';
+import authService from '@/services/api/auth';
 import { LoginRequestBody } from '@/services/types/request';
 import { UserBasicInfo } from '@/services/types/schema';
 import { AccessTokenPayload } from '@/types/utils';

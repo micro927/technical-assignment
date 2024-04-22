@@ -17,7 +17,7 @@ model User {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
   email        String     @unique
   password     String
-  name         String?
+  name         String
   chatRoomIDs  String[]   @db.ObjectId
   chatrooms    ChatRoom[] @relation(fields: [chatRoomIDs], references: [id])
   messagesSent Message[]

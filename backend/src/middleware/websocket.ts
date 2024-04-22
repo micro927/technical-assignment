@@ -1,15 +1,21 @@
+import { webSocketListener } from '@/controllers/websocketListener.js';
+import { AppHandler } from '@/types/app.js';
+import { verifyAccessToken } from '@/utils/authToken.js';
+import { SOCKET_ROOM } from '@/constants/websocket.js';
 import { Server } from 'http';
 import { Server as SocketServer } from 'socket.io';
-import { AppHandler } from '../types/app.js';
-import { verifyAccessToken } from '../utils/authToken.js';
 
 const createWebSocketMiddleware = (server: Server, path: string) => {
   const io = new SocketServer(server, { path });
   io.setMaxListeners(1000);
 
-  io.once('connect', (a) => {
-    console.log('socket: user connected ', a.id);
+  io.on('connect', (socket) => {
+    console.log('socket: user connected ', socket.id);
+    io.socketsJoin(SOCKET_ROOM.ACTIVE_USER);
+    webSocketListener(socket);
+
     io.on('disconnect', () => {
+      io.socketsLeave(SOCKET_ROOM.ACTIVE_USER);
       console.log('socket: user disconnected');
     });
   });
@@ -20,7 +26,6 @@ const createWebSocketMiddleware = (server: Server, path: string) => {
     if (success) {
       next();
     }
-    // not executed, since the previous middleware has returned an error
   });
 
   const middleware: AppHandler = (_req, res, next) => {

@@ -1,22 +1,22 @@
-import bcrypt from 'bcrypt';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { HTTP_STATUS } from '../constants/httpStatus.js';
-import { LoginRequestBody, RefreshTokenRequestBody } from '../types/request.js';
+import { HTTP_STATUS } from '@/constants/httpStatus.js';
+import { LoginRequestBody, RefreshTokenRequestBody } from '@/types/request.js';
 import {
   LoginResponse,
-  UserInfoResponse,
   RefreshTokenResponse,
-} from '../types/response.js';
+  UserInfoResponse,
+} from '@/types/response.js';
+import bcrypt from 'bcrypt';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
+import { AppHandler } from '@/types/app.js';
 import {
   generateAccessToken,
   generateRefreshToken,
   getAccessTokenSecret,
   getRefreshTokenSecret,
-} from '../utils/authToken.js';
-import prisma from '../utils/db.js';
-import getUserBasicInfoFromDatabase from '../utils/getUserBasicInfoFromDatabase.js';
-import { AppHandler } from '../types/app.js';
+} from '@/utils/authToken.js';
+import prisma from '@/utils/db.js';
+import getUserBasicInfoFromDatabase from '@/utils/getUserBasicInfoFromDatabase.js';
 
 const login: AppHandler<LoginResponse, LoginRequestBody> = async (req, res) => {
   if (!(req.body?.email || req.body?.password))

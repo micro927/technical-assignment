@@ -1,7 +1,7 @@
 import { createAxiosFetcher, getAuthorizationHeader } from '@/utils/fetcher';
-import SERVICE from './types/route';
-import { UserBasicInfo } from './types/schema';
-import { UserInfoResponse } from './types/response';
+import * as SERVICE from '@/services/types/route';
+import { UserBasicInfo } from '../types/schema';
+import { UserInfoResponse } from '../types/response';
 
 const userAPI = createAxiosFetcher(SERVICE.MAIN_ROUTE.USER);
 

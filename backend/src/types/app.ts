@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { WebSocketLocalsObj, VerifyTokenLocalsObj } from './response.js';
+import type { BasicObject } from '@/types/utils.js';
 
 // NOTE: duplicate from express
 interface ParsedQs {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
-
-export type BasicObject<value = unknown> = Record<string, value>;
 
 export type AppHandler<
   ResBody = BasicObject,

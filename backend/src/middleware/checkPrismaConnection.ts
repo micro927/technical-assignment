@@ -1,5 +1,5 @@
-import { AppHandler } from '../types/app.js';
-import prisma from '../utils/db.js';
+import { AppHandler } from '@/types/app.js';
+import prisma from '@/utils/db.js';
 
 export const checkPrismaConnection: AppHandler = async (_req, res, next) => {
   try {

@@ -8,7 +8,7 @@ import {
   RefreshTokenResponse,
 } from '@/services/types/response';
 import { getAuthorizationHeader, createAxiosFetcher } from '@/utils/fetcher';
-import SERVICE from './types/route';
+import * as SERVICE from '@/services/types/route';
 
 const authAPI = createAxiosFetcher(SERVICE.MAIN_ROUTE.AUTH);
 

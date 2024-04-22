@@ -16,9 +16,7 @@ function Layout() {
       </div>
       <div className="flex h-full w-full flex-1">
         {isLoggedIn && (
-          <div className="absolute h-screen w-full bg-green-300 md:w-[420px]">
-            sidebar
-          </div>
+          <div className=" w-full bg-green-300 md:w-[420px]">sidebar</div>
         )}
         <Outlet />
       </div>

@@ -1,6 +1,6 @@
+import chatController from '@/controllers/chat.js';
+import { CHAT_ROUTE } from '@/constants/route.js';
 import express from 'express';
-import { CHAT_ROUTE } from '../constants/routePath.js';
-import chatController from '../controllers/chat.js';
 
 const chatRouter = express.Router();
 const { getChat, getChats, postCreateChat, postSendMessage } = chatController;
