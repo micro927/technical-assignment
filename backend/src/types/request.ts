@@ -1,4 +1,6 @@
-import { User } from '@prisma/client';
+//NOTE: this file should sync with FRONTEND
+
+import { User } from './schema.js';
 import { BooleanString } from './app.js';
 
 export type LoginRequestBody = Pick<User, 'email' | 'password'>;
@@ -23,4 +25,13 @@ export type ChatCreateRequestBody = {
 
 export type ChatRequestParams = {
   chatRoomID: string;
+};
+
+export type UsersRequestBody = {
+  search: string;
+  limit?: number;
+};
+
+export type AddFriendRequestBody = {
+  id: string;
 };

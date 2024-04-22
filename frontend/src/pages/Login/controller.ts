@@ -23,21 +23,19 @@ function useLoginController() {
 
   const onSubmit = handleSubmit((formData: LoginFormValues) => {
     setIsLoading(true);
-    setTimeout(() => {
-      const { email, password } = formData;
-      login({
-        email,
-        password,
-      })
-        .then(() => setIsLoading(false))
-        .catch(() => {
-          setIsLoading(false);
-          setError('root', {
-            type: 'validate',
-            message: 'Login failed, please try again.',
-          });
+    const { email, password } = formData;
+    login({
+      email,
+      password,
+    })
+      .then(() => setIsLoading(false))
+      .catch(() => {
+        setIsLoading(false);
+        setError('root', {
+          type: 'validate',
+          message: 'Login failed, please try again.',
         });
-    }, 200);
+      });
   });
 
   return { isLoading, control, onSubmit, formState };

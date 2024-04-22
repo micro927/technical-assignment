@@ -15,7 +15,9 @@ const server = createServer(app);
 const websocket = createWebSocketMiddleware(server, MAIN_ROUTE.WEBSOCKET);
 
 const port = BACKEND_PORT || 8888;
-const corsOptions: CorsOptions = { origin: '*' };
+const corsOptions: CorsOptions = {
+  origin: '*',
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -24,8 +26,12 @@ app.use(checkPrismaConnection);
 app.use(websocket);
 app.use(router);
 app.get('/test', async (_req, res) => {
-  console.log('gogo');
+  res.send({ success: true });
 
+  // const a = await prisma.user.findMany({
+  //   select: { name: true, friendIDs: true, friendOfIDs: true },
+  // });
+  // res.send(a);
   // const hashedPassword = await bcrypt.hash('bbbb', 10);
   // try {
   //   const a = await prisma.user.findMany();
@@ -45,7 +51,6 @@ app.get('/test', async (_req, res) => {
   // } catch (e) {
   //   console.log(e);
   // }
-  res.send({ success: true });
 });
 
 server.listen(port, () => {

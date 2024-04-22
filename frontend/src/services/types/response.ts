@@ -1,6 +1,8 @@
-//NOTE: service response, it's should be always synced with BACKEND response
+// NOTE: this file should sync with FRONTEND
 
-import { ChatRoom, Message, UserBasicInfo } from './schema';
+import type { Server } from 'socket.io';
+import { UserBasicInfo } from './data.js';
+import { ChatRoom, Message } from './schema.js';
 
 export type CommonResponse = { success: boolean };
 
@@ -26,3 +28,11 @@ export type ChatsResponse = {
 }[];
 
 export type UserInfoResponse = UserBasicInfo | null;
+
+export type VerifyTokenLocalsObj = { id: string };
+
+export type WebSocketLocalsObj = {
+  io: Server;
+};
+
+export type UsersResponse = Partial<UserBasicInfo>[];

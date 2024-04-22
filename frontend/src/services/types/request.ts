@@ -1,11 +1,12 @@
-//NOTE: service request, it's should be always synced with BACKEND request
+//NOTE: this file should sync with FRONTEND
 
-import { User } from './schema';
+import { User } from './schema.js';
+import { BooleanString } from './app.js';
 
 export type LoginRequestBody = Pick<User, 'email' | 'password'>;
 
 export type UserInfoRequestParams = {
-  withFriends: boolean;
+  withFriends: BooleanString;
 };
 
 export type RefreshTokenRequestBody = {
@@ -24,4 +25,13 @@ export type ChatCreateRequestBody = {
 
 export type ChatRequestParams = {
   chatRoomID: string;
+};
+
+export type UsersRequestBody = {
+  search: string;
+  limit?: number;
+};
+
+export type AddFriendRequestBody = {
+  id: string;
 };

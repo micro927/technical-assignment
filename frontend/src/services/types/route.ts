@@ -14,7 +14,9 @@ export enum AUTH_ROUTE {
 
 export enum USER_ROUTE {
   INFO = '/info',
-  FRIENDS = '/friend',
+  USERS = '/users',
+  FRIEND = '/friend',
+  FRIENDS = '/friends',
 }
 
 export enum CHAT_ROUTE {
@@ -22,5 +24,3 @@ export enum CHAT_ROUTE {
   CHAT = '/:id',
   SEND_MESSAGE = '/send-message',
 }
-
-console.log();

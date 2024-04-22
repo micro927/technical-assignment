@@ -10,9 +10,12 @@ export type UserJWTPayload = { user: UserBasicInfo };
 
 export type AccessTokenPayload = JwtPayload & UserJWTPayload;
 
-export type SocketEventListener<Data> = (
+export type SocketEventListener<Data = BasicObject> = (
   socket: Socket,
-  listener: (data: Data) => void,
+  listener: (data?: Data) => void,
 ) => void;
 
-export type SocketEventEmitter<Data> = (socket: Socket, data: Data) => void;
+export type SocketEventEmitter<Data = BasicObject> = (
+  socket: Socket,
+  data?: Data,
+) => void;

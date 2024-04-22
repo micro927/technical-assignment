@@ -1,6 +1,8 @@
+// NOTE: this file should sync with FRONTEND
+
 import type { Server } from 'socket.io';
 import { UserBasicInfo } from './data.js';
-import { ChatRoom, Message } from '@prisma/client';
+import { ChatRoom, Message } from './schema.js';
 
 export type CommonResponse = { success: boolean };
 
@@ -27,10 +29,10 @@ export type ChatsResponse = {
 
 export type UserInfoResponse = UserBasicInfo | null;
 
-//NOTE: type for locals object, no need to use in Frontend
-
 export type VerifyTokenLocalsObj = { id: string };
 
 export type WebSocketLocalsObj = {
   io: Server;
 };
+
+export type UsersResponse = Partial<UserBasicInfo>[];

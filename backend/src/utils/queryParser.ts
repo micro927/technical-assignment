@@ -10,3 +10,8 @@ export const parseBoolean = (booleanString?: BooleanString) => {
   }
   return undefined;
 };
+
+export const parseNumber = (value: string | number | undefined) => {
+  if (value === undefined) return undefined;
+  return parseInt(value as string);
+};

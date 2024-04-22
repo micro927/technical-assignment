@@ -3,6 +3,7 @@ import {
   chatRoomsSelectedFields,
 } from '@/constants/dataQueryFields.js';
 import { HTTP_STATUS } from '@/constants/httpStatus.js';
+import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
 import { AppHandler } from '@/types/app.js';
 import {
   ChatCreateRequestBody,
@@ -15,10 +16,8 @@ import {
   ChatsResponse,
   CommonResponse,
 } from '@/types/response.js';
-import prisma from '@/utils/db.js';
-import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
-import { ChatRoomUpdatedData } from '@/types/socketData.js';
 import type { BasicObject } from '@/types/utils.js';
+import prisma from '@/utils/db.js';
 
 const postSendMessage: AppHandler<
   CommonResponse,
@@ -43,35 +42,33 @@ const postSendMessage: AppHandler<
           senderID,
           chatRoomID,
         },
+        include: {
+          chatroom: { select: { memberIDs: true } },
+        },
       })
-      .then((message) => {
-        const { chatRoomID, createdAt } = message;
+      .then(async (data) => {
+        const { chatRoomID, createdAt, chatroom, content, senderID, id } = data;
 
-        res.locals.io
-          .to(chatRoomID)
-          .emit(SOCKET_EVENT.NEW_CHAT_MESSAGE, message);
+        res.locals.io.to(chatRoomID).emit(SOCKET_EVENT.NEW_CHAT_MESSAGE, {
+          id,
+          content,
+          chatRoomID,
+          senderID,
+          createdAt,
+        });
 
-        const roomMemberClientIDs =
-          res.locals.io.sockets.adapter.rooms.get(chatRoomID);
-        const activeUserClientIDs = res.locals.io.sockets.adapter.rooms.get(
-          SOCKET_ROOM.ACTIVE_USER,
-        );
+        const activeClients = await res.locals.io.sockets
+          .in(SOCKET_ROOM.ACTIVE_USER)
+          .fetchSockets();
 
-        if (roomMemberClientIDs && activeUserClientIDs) {
-          for (const clientID of roomMemberClientIDs) {
-            if (clientID in activeUserClientIDs) {
-              const chatRoomUpdatedData: ChatRoomUpdatedData = {
-                chatRoomID,
-                createdAt,
-              };
-
-              res.locals.io.emit(
-                SOCKET_EVENT.CHATROOM_UPDATED,
-                chatRoomUpdatedData,
-              );
-            }
+        activeClients.map((client) => {
+          if (chatroom.memberIDs.includes(client.data.userID)) {
+            res.locals.io.sockets
+              .to(client.id)
+              .emit(SOCKET_EVENT.CHATROOM_UPDATED, { createdAt });
           }
-        }
+        });
+
         res.send({ success: true });
       })
       .catch(() => {

@@ -11,11 +11,11 @@ const createWebSocketMiddleware = (server: Server, path: string) => {
 
   io.on('connect', (socket) => {
     console.log('socket: user connected ', socket.id);
-    io.socketsJoin(SOCKET_ROOM.ACTIVE_USER);
-    webSocketListener(socket);
+    socket.join(SOCKET_ROOM.ACTIVE_USER);
 
+    webSocketListener(socket, io);
     io.on('disconnect', () => {
-      io.socketsLeave(SOCKET_ROOM.ACTIVE_USER);
+      socket.leave(SOCKET_ROOM.ACTIVE_USER);
       console.log('socket: user disconnected');
     });
   });

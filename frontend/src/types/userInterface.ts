@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { SetState } from './utils';
 
 export type Theme = 'light' | 'dark' | 'system';
@@ -27,3 +28,10 @@ export type UserInterfaceProviderType = ({
 }: {
   children: JSX.Element;
 }) => JSX.Element;
+
+export type BaseModalProps = {
+  children?: ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  className?: string;
+};

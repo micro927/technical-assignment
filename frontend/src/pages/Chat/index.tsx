@@ -1,11 +1,13 @@
 import { AuthenticationContext } from '@/core/authentication/Context';
 import {
-  emitUpdateUserActivity,
+  emitRegisterActiveUser,
+  emitUnRegisterActiveUser,
   onFriendsActivityUpdated,
 } from '@/services/websocket/activity';
 import { useUserActivity } from '@/utils/useUserActivity';
 import useWebSocket from '@/utils/useWebSocket';
 import { useContext, useEffect } from 'react';
+import MenuBar from './components/MenuBar';
 
 function Chat() {
   const { userInformation } = useContext(AuthenticationContext);
@@ -13,27 +15,35 @@ function Chat() {
   const { isActive } = useUserActivity();
 
   useEffect(() => {
-    console.log('here');
-
     if (socket)
       onFriendsActivityUpdated(socket, (data) => {
-        console.log('found online friends', data);
+        if (userInformation?.id !== data?.userID)
+          alert(`found online friends', ${data?.userID}`);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socket, userInformation]);
 
   useEffect(() => {
-    if (socket)
-      emitUpdateUserActivity(socket, {
-        userId: userInformation?.id ?? '',
-        online: isActive,
-      });
+    if (socket) {
+      if (isActive) {
+        emitRegisterActiveUser(socket, {
+          userID: userInformation?.id ?? '',
+          friendIDs: ['6624f8c89d75f14793a332b9', '66239835a7139eb903c245ab'],
+        });
+      } else {
+        emitUnRegisterActiveUser(socket);
+      }
+    }
+
+    return () => {
+      if (socket) emitUnRegisterActiveUser(socket);
+    };
   }, [socket, isActive, userInformation]);
 
   return (
     <div className="h-screen w-full bg-red-500">
+      <MenuBar />
       {isActive && 'isActive'}
-      sds
+      <p>{userInformation?.id}</p>
     </div>
   );
 }

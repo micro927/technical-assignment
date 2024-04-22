@@ -4,10 +4,6 @@ export const useUserActivity = () => {
   const [isActive, setIsActive] = useState(true); // Initially assume user is active
 
   useEffect(() => {
-    console.log('is', isActive);
-  }, [isActive]);
-
-  useEffect(() => {
     const setActive = () => {
       // if (!isActive) {
       setIsActive(true);
@@ -19,12 +15,10 @@ export const useUserActivity = () => {
     };
 
     const handleActivity = () => {
-      console.log('handleActivity');
       setActive();
     };
 
     const handleInactivity = () => {
-      console.log('handle IN Activity');
       setInactive();
     };
 

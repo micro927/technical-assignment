@@ -1,10 +1,10 @@
-export type UpdateUserActivityData = {
-  userId: string;
-  online: boolean;
+export type RegisterActiveUserData = {
+  userID: string;
+  friendIDs: string[];
 };
 
 export type FriendsActivityUpdatedData = {
-  userId: string;
+  userID: string;
   online: boolean;
 };
 

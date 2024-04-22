@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { WebSocketLocalsObj, VerifyTokenLocalsObj } from './response.js';
 import type { BasicObject } from '@/types/utils.js';
+import type { Server, Socket } from 'socket.io';
 
 // NOTE: duplicate from express
 interface ParsedQs {
@@ -20,5 +21,7 @@ export type AppHandler<
   ReqQuery,
   LocalsObj & WebSocketLocalsObj & VerifyTokenLocalsObj
 >;
+
+export type WebSocketListenerController = (socket: Socket, io?: Server) => void;
 
 export type BooleanString = 'true' | 'false';
