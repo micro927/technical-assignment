@@ -1,5 +1,5 @@
 import { LoginRequestBody } from '@/services/types/request';
-import { UserBasicInfo } from '../services/types/schema';
+import { UserBasicInfo } from '../services/types/data';
 
 export type AuthenticationContextType = {
   isLoggedIn: boolean;

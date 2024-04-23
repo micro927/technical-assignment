@@ -32,6 +32,6 @@ export type UsersRequestBody = {
   limit?: number;
 };
 
-export type AddFriendRequestBody = {
-  id: string;
+export type AddFriendsRequestBody = {
+  friendIDs: string[];
 };

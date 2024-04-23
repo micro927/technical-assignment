@@ -1,21 +1,19 @@
-import { useState } from 'react';
+import type { SetState } from '@/types/utils';
+import { useMediaSize } from '@/utils/useMediaSize';
+import { useEffect } from 'react';
 
-function useMenuBarController() {
-  const [isOpenAddFriendModal, setIsOpenAddFriendModal] = useState(false);
+function useMenuBarController({
+  setIsOpenMenuBar,
+}: {
+  setIsOpenMenuBar: SetState<boolean>;
+}) {
+  const { isMobile } = useMediaSize();
 
-  const openAddFriendModal = () => setIsOpenAddFriendModal(true);
-  const closeAddFriendModal = () => setIsOpenAddFriendModal(false);
+  useEffect(() => {
+    setIsOpenMenuBar(false);
+  }, [isMobile, setIsOpenMenuBar]);
 
-  const onAddFriendSuccess = (friendID?: string) => {
-    console.log(friendID);
-  };
-
-  return {
-    onAddFriendSuccess,
-    isOpenAddFriendModal,
-    openAddFriendModal,
-    closeAddFriendModal,
-  };
+  return { isMobile };
 }
 
 export default useMenuBarController;

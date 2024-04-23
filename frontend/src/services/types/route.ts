@@ -15,12 +15,11 @@ export enum AUTH_ROUTE {
 export enum USER_ROUTE {
   INFO = '/info',
   USERS = '/users',
-  FRIEND = '/friend',
   FRIENDS = '/friends',
 }
 
 export enum CHAT_ROUTE {
   CHATS = '/chats',
-  CHAT = '/:id',
+  CHAT = '/chat',
   SEND_MESSAGE = '/send-message',
 }

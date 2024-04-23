@@ -4,7 +4,7 @@ import { AppHandler } from '@/types/app.js';
 import { UserBasicInfo } from '@/types/data.js';
 import {
   UserInfoRequestParams,
-  type AddFriendRequestBody,
+  type AddFriendsRequestBody,
   type UsersRequestBody,
 } from '@/types/request.js';
 import {
@@ -39,13 +39,23 @@ const getInfo: AppHandler<
 const getFriends: AppHandler<UserBasicInfo[]> = async (_req, res) => {
   try {
     const id = res.locals?.id ?? '';
+    // prisma.user
+    //   .findUnique({
+    //     select: { friends: userSelectedFields },
+    //     where: { id },
+    //   })
     prisma.user
-      .findFirstOrThrow({
-        select: { friends: userSelectedFields },
-        where: { id },
+      .findMany(
+        Object.assign(userSelectedFields, {
+          where: { friendIDs: { has: id } },
+        }),
+      )
+      .then((data) => {
+        if (data === null)
+          return res.status(HTTP_STATUS.NOT_FOUND_404).send([]);
+        return res.status(HTTP_STATUS.OK_200).send(data);
       })
-      .then(({ friends }) => res.status(HTTP_STATUS.OK_200).send(friends))
-      .catch(() => res.sendStatus(HTTP_STATUS.NOT_FOUND_404));
+      .catch(() => res.status(HTTP_STATUS.NOT_FOUND_404));
   } catch (error) {
     return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500);
   }
@@ -63,54 +73,58 @@ const getUsers: AppHandler<
     const limit = parseNumber(req.query?.limit);
     if (search === '') return res.status(HTTP_STATUS.NO_CONTENT_204).send([]);
     prisma.user
-      .findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-        where: {
-          OR: [{ email: { contains: search } }, { name: { contains: search } }],
-          NOT: { id },
-        },
-        take: limit,
-      })
+      .findMany(
+        Object.assign(userSelectedFields, {
+          where: {
+            OR: [
+              { email: { contains: search } },
+              { name: { contains: search } },
+            ],
+            NOT: { OR: [{ id }, { friendIDs: { has: id } }] },
+          },
+          take: limit,
+        }),
+      )
       .then((users) => res.status(HTTP_STATUS.OK_200).send(users))
-      .catch(() => res.sendStatus(HTTP_STATUS.NO_CONTENT_204));
+      .catch(() => res.sendStatus(HTTP_STATUS.NO_CONTENT_204).send([]));
   } catch (error) {
     return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500);
   }
 };
 
-const postAddFriend: AppHandler<CommonResponse, AddFriendRequestBody> = (
+const postAddFriends: AppHandler<CommonResponse, AddFriendsRequestBody> = (
   req,
   res,
 ) => {
   try {
     const { id } = res.locals;
-    const { id: friendID } = req.body;
+    const { friendIDs } = req.body;
+
+    const addFriend = (id: string, friendID: string) => [
+      prisma.user.update({
+        where: {
+          id,
+          NOT: { friends: { some: { id: friendID } } },
+        },
+        data: {
+          friendIDs: { push: friendID },
+        },
+      }),
+      prisma.user.update({
+        where: {
+          id: friendID,
+          NOT: { friends: { some: { id } } },
+        },
+        data: {
+          friendIDs: {
+            push: id,
+          },
+        },
+      }),
+    ];
+
     prisma
-      .$transaction([
-        prisma.user.update({
-          where: {
-            id,
-            NOT: { friends: { some: { id: friendID } } },
-          },
-          data: {
-            friendIDs: { push: friendID },
-          },
-        }),
-        prisma.user.update({
-          where: {
-            id: friendID,
-            NOT: { friends: { some: { id } } },
-          },
-          data: {
-            friendIDs: {
-              push: id,
-            },
-          },
-        }),
-      ])
+      .$transaction(friendIDs.map((friendID) => addFriend(id, friendID)).flat())
       .then(() => {
         return res.status(HTTP_STATUS.CREATED_201).send({
           success: true,
@@ -129,7 +143,7 @@ const postAddFriend: AppHandler<CommonResponse, AddFriendRequestBody> = (
 const userController = {
   getInfo,
   getFriends,
-  postAddFriend,
+  postAddFriends,
   getUsers,
 };
 

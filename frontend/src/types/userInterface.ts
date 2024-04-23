@@ -35,3 +35,8 @@ export type BaseModalProps = {
   onClose: () => void;
   className?: string;
 };
+
+export type LayoutOutletContext = {
+  isOpenMenuBar: boolean;
+  setIsOpenMenuBar: SetState<boolean>;
+};

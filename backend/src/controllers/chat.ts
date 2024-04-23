@@ -5,6 +5,7 @@ import {
 import { HTTP_STATUS } from '@/constants/httpStatus.js';
 import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
 import { AppHandler } from '@/types/app.js';
+import type { ChatInfo } from '@/types/data.js';
 import {
   ChatCreateRequestBody,
   ChatRequestParams,
@@ -85,11 +86,14 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
 ) => {
   try {
     const { memberIDs } = req.body;
-
+    const { id: userID } = res.locals;
+    const memberIDsIncludeSelf = [...memberIDs, userID];
+    if (memberIDs.length === 0)
+      return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
     prisma.chatRoom
       .create({
         data: {
-          memberIDs,
+          memberIDs: memberIDsIncludeSelf,
         },
       })
       .then(({ id: chatRoomID }) => {
@@ -137,20 +141,28 @@ const getChat: AppHandler<
 const getChats: AppHandler<ChatsResponse> = (_req, res) => {
   try {
     const { id: userID } = res.locals;
+
+    console.log(userID);
+
     prisma.chatRoom
-      .findMany(
-        Object.assign(chatRoomsSelectedFields, {
-          where: {
-            memberIDs: { has: userID },
-          },
-        }),
-      )
-      .then((data) => {
-        return res.status(HTTP_STATUS.OK_200).send(data);
+      .findMany({
+        select: chatRoomsSelectedFields.select,
+        where: {
+          memberIDs: { has: userID },
+        },
       })
-      .catch(() => {
-        return res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
-      });
+      .then((data) => {
+        console.log(data);
+        const chatsInfo: ChatInfo[] = data.map(({ id, members, messages }) => {
+          return {
+            id,
+            members,
+            lastMessages: messages,
+          };
+        });
+        return res.status(HTTP_STATUS.OK_200).send(chatsInfo);
+      })
+      .catch(() => res.status(HTTP_STATUS.NO_CONTENT_204).send([]));
   } catch (e) {
     console.log(e);
     return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500);

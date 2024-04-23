@@ -1,6 +1,6 @@
 import { CHAT_ROUTE, PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/route';
 import { AuthenticationContext } from '@/core/authentication/Context';
-import Chat from '@/pages/Chat';
+import { Chat } from '@/pages/Chat';
 import Login from '@/pages/Login';
 import { useContext } from 'react';
 import {
@@ -11,6 +11,8 @@ import {
   useRoutes,
 } from 'react-router-dom';
 import Layout from './components/Layout';
+import Welcome from './pages/Chat/components/Welcome';
+import ChatRoom from './pages/Chat/components/ChatRoom';
 
 const publicRoutes: RouteObject[] = [
   {
@@ -40,11 +42,11 @@ const privateRoutes: RouteObject[] = [
           {
             index: true,
             path: '',
-            element: <Chat />,
+            element: <Welcome />,
           },
           {
             path: CHAT_ROUTE.ROOM,
-            element: <Chat />,
+            element: <ChatRoom />,
           },
         ],
       },

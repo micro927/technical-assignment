@@ -16,8 +16,8 @@ const chatAPI = createAxiosFetcher(SERVICE.MAIN_ROUTE.CHAT);
 
 const postSendMessage = async (params: SendMessageRequestBody) => {
   return chatAPI.post<CommonResponse>(
-    SERVICE.CHAT_ROUTE.CHAT,
-    { params },
+    SERVICE.CHAT_ROUTE.SEND_MESSAGE,
+    params,
     getAuthorizationHeader(),
   );
 };
@@ -25,7 +25,7 @@ const postSendMessage = async (params: SendMessageRequestBody) => {
 const postCreateChat = async (params: ChatCreateRequestBody) => {
   return chatAPI.post<ChatCreateResponse>(
     SERVICE.CHAT_ROUTE.CHAT,
-    { params },
+    params,
     getAuthorizationHeader(),
   );
 };
@@ -43,11 +43,11 @@ const getChats = async () => {
   });
 };
 
-export const marketingService = {
+export const chatService = {
   postSendMessage,
   postCreateChat,
   getChat,
   getChats,
 };
 
-export default marketingService;
+export default chatService;

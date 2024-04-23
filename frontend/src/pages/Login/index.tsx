@@ -37,12 +37,14 @@ function Login() {
             }}
             className="w-full"
             autoFocus
+            autoComplete="off"
           />
           <Input<LoginFormValues>
             control={control}
             placeholder="Please enter your password"
             type="password"
             name="password"
+            autoComplete="current-password"
             label="Password"
             rules={{
               required: true,

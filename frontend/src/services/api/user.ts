@@ -1,12 +1,12 @@
 import { createAxiosFetcher, getAuthorizationHeader } from '@/utils/fetcher';
 import * as SERVICE from '@/services/types/route';
-import { UserBasicInfo } from '../types/schema';
+import { UserBasicInfo } from '../types/data';
 import {
   UserInfoResponse,
   type CommonResponse,
   type UsersResponse,
 } from '../types/response';
-import type { AddFriendRequestBody, UsersRequestBody } from '../types/request';
+import type { AddFriendsRequestBody, UsersRequestBody } from '../types/request';
 
 const userAPI = createAxiosFetcher(SERVICE.MAIN_ROUTE.USER);
 
@@ -29,10 +29,10 @@ const getUsers = async (params: UsersRequestBody) => {
   });
 };
 
-const postAddFriend = async (params: AddFriendRequestBody) => {
+const postAddFriends = async (params: AddFriendsRequestBody) => {
   return await userAPI
     .post<CommonResponse>(
-      SERVICE.USER_ROUTE.FRIEND,
+      SERVICE.USER_ROUTE.FRIENDS,
       params,
       getAuthorizationHeader(),
     )
@@ -43,7 +43,7 @@ const userService = {
   getInfo,
   getFriends,
   getUsers,
-  postAddFriend,
+  postAddFriends,
 };
 
 export default userService;

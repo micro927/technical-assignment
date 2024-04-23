@@ -11,6 +11,8 @@ function Input<FormValues extends FieldValues>(
       label?: string;
       type?: React.HTMLInputTypeAttribute;
       className?: string;
+      hideErrorMessage?: boolean;
+      key?: string | number;
     },
 ) {
   const { field, fieldState } = useController(props);
@@ -24,21 +26,25 @@ function Input<FormValues extends FieldValues>(
         </label>
       )}
       <input
+        key={props.key}
         type={type ?? 'text'}
         {...field}
         placeholder={props.placeholder}
         autoFocus={props.autoFocus}
+        autoComplete={props.autoComplete}
         className={clsx(
-          'min-h-9 rounded-lg px-2 py-1 text-xs text-gray-900 shadow-sm outline-orange-900 disabled:bg-gray-200 md:min-h-10 md:text-sm',
+          'h-9 rounded-lg border px-2 py-1 text-xs text-gray-900 shadow-sm outline-orange-900 disabled:bg-gray-200 md:h-10 md:text-sm',
           invalid
             ? 'outline-red-400 dark:outline-rose-400'
             : '!outline-blue-500 dark:!outline-blue-400',
           className,
         )}
       />
-      <p className="text-xxs m-1  text-right  text-rose-600 md:text-xs dark:text-rose-400">
-        {invalid && error?.message}
-      </p>
+      {!props?.hideErrorMessage && (
+        <p className="text-xxs m-1  text-right  text-rose-600 md:text-xs dark:text-rose-400">
+          {invalid && error?.message}
+        </p>
+      )}
     </div>
   );
 }

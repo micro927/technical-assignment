@@ -1,24 +1,26 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthenticationContext } from '@/core/authentication/Context';
+import type { LayoutOutletContext } from '@/types/userInterface';
 
 function Layout() {
   const { isLoggedIn } = useContext(AuthenticationContext);
+  const [isOpenMenuBar, setIsOpenMenuBar] = useState(true);
+  const toggleMenuBar = () => setIsOpenMenuBar((prev) => !prev);
+  const outletContext: LayoutOutletContext = {
+    isOpenMenuBar,
+    setIsOpenMenuBar,
+  };
 
   return (
     <div
       id="app-layout"
-      className=" min-w-screen flex min-h-screen flex-col bg-gray-100 text-gray-900 transition-colors duration-100 dark:bg-gray-800 dark:text-white"
+      className=" min-w-screen flex h-screen flex-col bg-gray-100 text-gray-900 transition-colors duration-100 dark:bg-gray-800 dark:text-white"
     >
-      <div>
-        <Navbar isLoggedIn={isLoggedIn} />
-      </div>
-      <div className="flex h-full w-full flex-1">
-        {isLoggedIn && (
-          <div className=" w-full bg-green-300 md:w-[420px]">sidebar</div>
-        )}
-        <Outlet />
+      <Navbar isLoggedIn={isLoggedIn} toggleMenuBar={toggleMenuBar} />
+      <div className="flex h-[calc(100vh-62px)]">
+        <Outlet context={outletContext} />
       </div>
     </div>
   );

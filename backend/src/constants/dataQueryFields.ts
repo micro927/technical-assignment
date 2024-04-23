@@ -21,7 +21,6 @@ export const chatRoomsSelectedFields =
     select: {
       id: true,
       messages: {
-        select: { content: true },
         orderBy: { createdAt: 'desc' },
         take: 1,
       },

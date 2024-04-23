@@ -4,7 +4,7 @@ export type User = {
   id: string;
   email: string;
   password: string;
-  name: string | null;
+  name: string;
   chatRoomIDs: string[];
   friendIDs: string[];
   friendOfIDs: string[];
@@ -22,8 +22,4 @@ export type ChatRoom = {
   id: string;
   memberIDs: string[];
   createdAt: Date;
-};
-
-export type UserBasicInfo = Pick<User, 'id' | 'name' | 'email'> & {
-  friends?: UserBasicInfo[];
 };

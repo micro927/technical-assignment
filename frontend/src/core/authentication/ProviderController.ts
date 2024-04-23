@@ -1,6 +1,6 @@
 import authService from '@/services/api/auth';
 import { LoginRequestBody } from '@/services/types/request';
-import { UserBasicInfo } from '@/services/types/schema';
+import { UserBasicInfo } from '@/services/types/data';
 import { AccessTokenPayload } from '@/types/utils';
 import {
   accessTokenDecode,

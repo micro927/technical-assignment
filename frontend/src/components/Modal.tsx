@@ -47,7 +47,7 @@ function Modal({ children, isOpen, onClose, className }: BaseModalProps) {
               exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
               className={clsx(
                 className,
-                'fixed z-50 overflow-scroll shadow-xl',
+                'fixed z-50 overflow-scroll bg-gray-100 text-gray-900 shadow-xl dark:bg-gray-800 dark:text-white',
               )}
               open
             >

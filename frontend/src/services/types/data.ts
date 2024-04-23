@@ -1,4 +1,4 @@
-import { User, type Message } from './schema.js';
+import type { Message, User } from './schema';
 
 export type UserBasicInfo = Pick<User, 'id' | 'name' | 'email'> & {
   friends?: UserBasicInfo[];
@@ -9,7 +9,3 @@ export type ChatInfo = {
   members: Partial<UserBasicInfo>[];
   lastMessages: Partial<Message>[];
 };
-
-export type AccessTokenJWTPayload = { user: UserBasicInfo };
-
-export type RefreshTokenJWTPayload = { id: string };

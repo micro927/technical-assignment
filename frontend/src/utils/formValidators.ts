@@ -11,6 +11,7 @@ const schemas = {
     .min(4, 'Password is too short - must be at least 4 chars.')
     .min(1, 'Please enter your password.'),
   search: z.string().min(1, 'Please enter your search data.').max(80),
+  friendIDs: z.array(z.string().min(1)).min(1),
 };
 
 export const createZodObjectSchema = (

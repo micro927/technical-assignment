@@ -1,4 +1,4 @@
-import { UserBasicInfo } from '@/services/types/schema';
+import { UserBasicInfo } from '@/services/types/data';
 import { JwtPayload } from 'jwt-decode';
 import { Socket } from 'socket.io-client';
 

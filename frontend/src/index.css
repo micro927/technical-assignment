@@ -11,6 +11,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
+hr {
+  @apply w-full border-t-gray-300 opacity-80 dark:border-t-gray-600;
+}
+
 .app-title {
   @apply inline-block bg-gradient-to-r from-green-400 via-cyan-900 to-blue-500 bg-clip-text py-2 text-transparent dark:from-green-300 dark:via-cyan-800 dark:to-blue-400;
 }
@@ -19,9 +23,9 @@ button.primary {
   @apply bg-blue-500 text-white hover:bg-blue-600 disabled:bg-blue-200;
 }
 button.secondary {
-  @apply bg-slate-500 text-white hover:bg-slate-700 disabled:bg-slate-200;
+  @apply bg-slate-400 text-white hover:bg-slate-500 disabled:bg-slate-200;
 }
-button.success {
+/* button.success {
   @apply bg-dark;
 }
 button.warning {
@@ -29,4 +33,15 @@ button.warning {
 }
 button.error {
   @apply bg-dark;
+} */
+
+button.outline {
+  @apply !bg-transparent;
+}
+
+button.outline.primary {
+  @apply text-blue-500 hover:text-blue-600 disabled:text-blue-200;
+}
+button.outline.secondary {
+  @apply text-slate-400 hover:text-slate-500 disabled:text-slate-200;
 }
