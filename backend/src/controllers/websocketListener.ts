@@ -1,50 +1,75 @@
 import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js'; //.js
 import type { WebSocketListenerController } from '@/types/app.js';
-import { RegisterActiveUserData } from '@/types/socketData.js';
+import {
+  RegisterActiveUserData,
+  type SocketUserData,
+} from '@/types/socketData.js';
 import { Socket, type Server } from 'socket.io';
 
-const registerActiveUserController: WebSocketListenerController = (
+const registerActiveUserController: WebSocketListenerController = ({
   socket,
-  io,
-) => {
+}) => {
   socket.on(
     SOCKET_EVENT.REGISTER_ACTIVE_USER,
     async (data?: RegisterActiveUserData) => {
       socket.join(SOCKET_ROOM.ACTIVE_USER);
       socket.data = data;
 
-      if (io) {
-        const activeClients = await io.sockets
-          .in(SOCKET_ROOM.ACTIVE_USER)
-          .fetchSockets();
-
-        activeClients.map((client) => {
-          if ((data?.friendIDs ?? []).includes(client.data.userID)) {
-            io.sockets
-              .to(client.id)
-              .emit(SOCKET_EVENT.FRIENDS_ACTIVITY_UPDATED, {
-                userID: data?.userID,
-              });
-          }
+      socket
+        .to(SOCKET_ROOM.ACTIVE_USER)
+        .emit(SOCKET_EVENT.FRIENDS_ACTIVITY_UPDATED, {
+          userID: data?.userID,
+          online: true,
         });
-      }
+
+      socket
+        .in(SOCKET_ROOM.ACTIVE_USER)
+        .fetchSockets()
+        .then((sockets) => {
+          const activeFriends = sockets
+            .map((socket) => (socket.data as SocketUserData).userID)
+            .filter((userID) => socket.data?.friendIDs.includes(userID));
+
+          socket.emit(SOCKET_EVENT.ACTIVE_USER, activeFriends);
+        });
     },
   );
 };
 
-const unRegisterActiveUserController: WebSocketListenerController = (io) => {
-  io.on(SOCKET_EVENT.UNREGISTER_ACTIVE_USER, () => {
-    io.leave(SOCKET_ROOM.ACTIVE_USER);
+const unRegisterActiveUserController: WebSocketListenerController = ({
+  socket,
+}) => {
+  socket.on(SOCKET_EVENT.UNREGISTER_ACTIVE_USER, () => {
+    socket.leave(SOCKET_ROOM.ACTIVE_USER);
+    socket
+      .to(SOCKET_ROOM.ACTIVE_USER)
+      .emit(SOCKET_EVENT.FRIENDS_ACTIVITY_UPDATED, {
+        userID: socket.data?.userID,
+        online: false,
+      });
+  });
+};
+
+const joinChatRoomController: WebSocketListenerController = ({
+  socket,
+  io,
+}) => {
+  socket.on(SOCKET_EVENT.JOIN_CHATROOM, async (chatRoomID?: string) => {
+    if (chatRoomID && io) socket.join(chatRoomID);
+    console.log(socket.id, 'has join ', chatRoomID);
+  });
+};
+
+const leaveChatRoomController: WebSocketListenerController = ({ socket }) => {
+  socket.on(SOCKET_EVENT.LEAVE_CHATROOM, (chatRoomID?: string) => {
+    if (chatRoomID) socket.leave(chatRoomID);
+    console.log(socket.id, 'has left ', chatRoomID);
   });
 };
 
 export function webSocketListener(socket: Socket, io: Server) {
-  registerActiveUserController(socket, io);
-  unRegisterActiveUserController(socket, io);
-  //TODO: register user (add Id)
-  //TODO: unregister user
-  //TODO: join chatroom(ID) room
-  //TODO: leave chatroom(ID) room
-  //TODO: join active user room
-  //TODO: leave active user room
+  registerActiveUserController({ socket, io });
+  unRegisterActiveUserController({ socket, io });
+  joinChatRoomController({ socket, io });
+  leaveChatRoomController({ socket, io });
 }

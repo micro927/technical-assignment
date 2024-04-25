@@ -7,10 +7,11 @@ import type { AddFriendsRequestBody } from '@/services/types/request';
 import { useContext } from 'react';
 import { ChatContext } from '../..';
 import useCreateChatModalController from './controller';
+import type { ChatInfo } from '@/services/types/data';
 
 function CreateChatModal(
   props: BaseModalProps & {
-    onCreateChatSuccess?: (chatRoomID?: string) => void;
+    onCreateChatSuccess: (chatInfo: ChatInfo, isExisted: boolean) => void;
   },
 ) {
   const { isOpen, onClose, onCreateChatSuccess } = props;
@@ -66,7 +67,7 @@ function CreateChatModal(
               className="w-full"
               disabled={!createChatForm.formState.isValid || isLoading}
             >
-              Create with {createChatForm.watch('friendIDs').length} member (s)
+              Chat with {createChatForm.watch('friendIDs').length} member (s)
             </Button>
           </form>
         )}

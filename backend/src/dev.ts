@@ -76,18 +76,31 @@ devRouter.get('/add-friends', async (req, res) => {
 });
 
 devRouter.get('/reset-user', async (req, res) => {
-  await prisma.user.deleteMany();
-  const data = [];
-  for (let i = 97; i <= 122; i++) {
-    const char = String.fromCharCode(i);
-    const email = `${char}${char}${char}${char}@example.com`;
-    const password = await hash('123456', 10);
-    const name = `Mr. ${char.toUpperCase()}`;
-    data.push({ email, password, name });
-  }
-  const r = await prisma.user.createMany({ data });
-  console.log(r);
-  res.send({ success: true });
+  const deleteUser = prisma.user.deleteMany();
+  const deleteChat = prisma.chatRoom.deleteMany();
+
+  const password = await hash('123456', 10);
+
+  prisma
+    .$transaction([deleteUser, deleteChat])
+    .then(() => {
+      const data = [];
+      for (let i = 97; i <= 122; i++) {
+        const char = String.fromCharCode(i);
+        const email = `${char}${char}${char}${char}@example.com`;
+        const name = `${char.toUpperCase()}mockname`;
+        data.push({ email, password, name, friendIDs: [], friendOfIDs: [] });
+      }
+
+      prisma.user
+        .createMany({ data })
+        .then((r) => {
+          console.log(r);
+          res.send({ success: true });
+        })
+        .catch(() => res.sendStatus(HTTP_STATUS.CONFLICT_409));
+    })
+    .catch(() => res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500));
 });
 
 devRouter.get('/dev-users', async (req, res) => {

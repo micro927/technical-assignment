@@ -39,4 +39,5 @@ export type BaseModalProps = {
 export type LayoutOutletContext = {
   isOpenMenuBar: boolean;
   setIsOpenMenuBar: SetState<boolean>;
+  isMobile: boolean;
 };

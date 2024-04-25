@@ -13,17 +13,18 @@ export type LoginResponse = {
 
 export type RefreshTokenResponse = LoginResponse;
 
-export type ChatCreateResponse = {
-  chatRoomID: string;
-};
+export type ChatCreateResponse = ChatInfo;
 
 export type ChatResponse = ChatRoom & {
-  messages?: Partial<Message>[];
+  messages?: Message[];
+  members: UserBasicInfo[];
 };
 
 export type ChatsResponse = ChatInfo[];
 
 export type UserInfoResponse = UserBasicInfo | null;
+
+export type AddFriendsResponse = UserBasicInfo[];
 
 export type VerifyTokenLocalsObj = { id: string };
 

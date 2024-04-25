@@ -22,6 +22,12 @@ export type AppHandler<
   LocalsObj & WebSocketLocalsObj & VerifyTokenLocalsObj
 >;
 
-export type WebSocketListenerController = (socket: Socket, io?: Server) => void;
+export type WebSocketListenerController = ({
+  socket,
+  io,
+}: {
+  socket: Socket;
+  io?: Server;
+}) => void;
 
 export type BooleanString = 'true' | 'false';

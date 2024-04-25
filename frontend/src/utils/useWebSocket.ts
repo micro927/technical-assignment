@@ -23,6 +23,7 @@ const useWebSocket = () => {
     setSocket(socket);
 
     return () => {
+      console.log(`disconnected ! (id: ${socket.id})`);
       socket.disconnect();
     };
   }, []);

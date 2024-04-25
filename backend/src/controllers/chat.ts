@@ -1,9 +1,9 @@
 import {
   chatRoomSelectedFields,
-  chatRoomsSelectedFields,
+  chatSelectedFields,
 } from '@/constants/dataQueryFields.js';
 import { HTTP_STATUS } from '@/constants/httpStatus.js';
-import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
+import { SOCKET_EVENT } from '@/constants/websocket.js';
 import { AppHandler } from '@/types/app.js';
 import type { ChatInfo } from '@/types/data.js';
 import {
@@ -17,8 +17,11 @@ import {
   ChatsResponse,
   CommonResponse,
 } from '@/types/response.js';
+import type { ChatRoomUpdatedData } from '@/types/socketData.js';
 import type { BasicObject } from '@/types/utils.js';
 import prisma from '@/utils/db.js';
+import { transformSelectedChatToChatInfo } from '@/utils/transformSelectedChatToChatInfo.js';
+import type { Message } from '@prisma/client';
 
 const postSendMessage: AppHandler<
   CommonResponse,
@@ -50,25 +53,32 @@ const postSendMessage: AppHandler<
       .then(async (data) => {
         const { chatRoomID, createdAt, chatroom, content, senderID, id } = data;
 
-        res.locals.io.to(chatRoomID).emit(SOCKET_EVENT.NEW_CHAT_MESSAGE, {
+        const message: Message = {
           id,
           content,
           chatRoomID,
           senderID,
           createdAt,
-        });
+        };
 
-        const activeClients = await res.locals.io.sockets
-          .in(SOCKET_ROOM.ACTIVE_USER)
-          .fetchSockets();
+        const chatRoomUpdatedData: ChatRoomUpdatedData = {
+          chatRoomID,
+          updatedAt: message.createdAt,
+        };
 
-        activeClients.map((client) => {
-          if (chatroom.memberIDs.includes(client.data.userID)) {
-            res.locals.io.sockets
-              .to(client.id)
-              .emit(SOCKET_EVENT.CHATROOM_UPDATED, { createdAt });
-          }
-        });
+        res.locals.io
+          .to(chatRoomID)
+          .emit(SOCKET_EVENT.NEW_CHATROOM_MESSAGE, message);
+
+        const allClients = await res.locals.io.sockets.fetchSockets();
+
+        const memberSocketIDs = allClients
+          .filter((client) => chatroom.memberIDs.includes(client.data.userID))
+          .map((member) => member.id);
+
+        res.locals.io.sockets
+          .to(memberSocketIDs)
+          .emit(SOCKET_EVENT.CHATROOM_UPDATED, chatRoomUpdatedData);
 
         res.send({ success: true });
       })
@@ -90,16 +100,29 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
     const memberIDsIncludeSelf = [...memberIDs, userID];
     if (memberIDs.length === 0)
       return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
+
     prisma.chatRoom
-      .create({
-        data: {
-          memberIDs: memberIDsIncludeSelf,
-        },
+      .findFirstOrThrow({
+        select: chatSelectedFields.select,
+        where: { memberIDs: { equals: memberIDsIncludeSelf } },
       })
-      .then(({ id: chatRoomID }) => {
-        return res.status(HTTP_STATUS.CREATED_201).send({
-          chatRoomID,
-        });
+      .then((data) => {
+        const chatInfo = transformSelectedChatToChatInfo(data);
+        return res.status(HTTP_STATUS.OK_200).send(chatInfo);
+      })
+      .catch(() => {
+        prisma.chatRoom
+          .create({
+            select: chatSelectedFields.select,
+            data: {
+              memberIDs: memberIDsIncludeSelf,
+            },
+          })
+          .then((data) => {
+            const chatInfo = transformSelectedChatToChatInfo(data);
+
+            return res.status(HTTP_STATUS.CREATED_201).send(chatInfo);
+          });
       });
   } catch (e) {
     console.log(e);
@@ -118,14 +141,13 @@ const getChat: AppHandler<
     const { chatRoomID } = req.query;
 
     prisma.chatRoom
-      .findUniqueOrThrow(
-        Object.assign(chatRoomSelectedFields, {
-          where: {
-            id: chatRoomID,
-            memberIDs: { has: userID },
-          },
-        }),
-      )
+      .findUniqueOrThrow({
+        include: chatRoomSelectedFields.include,
+        where: {
+          id: chatRoomID,
+          memberIDs: { has: userID },
+        },
+      })
       .then((data) => {
         return res.status(HTTP_STATUS.OK_200).send(data);
       })
@@ -142,23 +164,16 @@ const getChats: AppHandler<ChatsResponse> = (_req, res) => {
   try {
     const { id: userID } = res.locals;
 
-    console.log(userID);
-
     prisma.chatRoom
       .findMany({
-        select: chatRoomsSelectedFields.select,
+        select: chatSelectedFields.select,
         where: {
           memberIDs: { has: userID },
         },
       })
-      .then((data) => {
-        console.log(data);
-        const chatsInfo: ChatInfo[] = data.map(({ id, members, messages }) => {
-          return {
-            id,
-            members,
-            lastMessages: messages,
-          };
+      .then((dataList) => {
+        const chatsInfo: ChatInfo[] = dataList.map((data) => {
+          return transformSelectedChatToChatInfo(data);
         });
         return res.status(HTTP_STATUS.OK_200).send(chatsInfo);
       })

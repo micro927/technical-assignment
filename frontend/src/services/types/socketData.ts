@@ -1,18 +1,20 @@
-export type RegisterActiveUserData = {
+import type { Message } from './schema.js';
+
+export type SocketUserData = {
   userID: string;
   friendIDs: string[];
 };
+
+export type RegisterActiveUserData = SocketUserData;
 
 export type FriendsActivityUpdatedData = {
   userID: string;
   online: boolean;
 };
 
-export type NewChatMessageData = {
-  content: string;
-  chatRoomID: string;
-  senderID: string;
-  createdAt: Date;
-};
+export type NewChatMessageData = Message;
 
-export type ChatRoomUpdatedData = Partial<NewChatMessageData>;
+export type ChatRoomUpdatedData = {
+  chatRoomID: string;
+  updatedAt: Date;
+};

@@ -4,13 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import chatService from '@/services/api/chat';
+import type { ChatInfo } from '@/services/types/data';
 
 function useCreateChatModalController({
   onClose,
   onCreateChatSuccess,
 }: {
   onClose: () => void;
-  onCreateChatSuccess?: (chatRoomID?: string) => void;
+  onCreateChatSuccess: (chatInfo: ChatInfo, isExisted: boolean) => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const createChatSchema = createZodObjectSchema('friendIDs');
@@ -23,15 +24,13 @@ function useCreateChatModalController({
 
   const onSubmitCreateChat = createChatForm.handleSubmit(
     ({ friendIDs }: AddFriendsRequestBody) => {
-      console.log(friendIDs);
-
       setIsLoading(true);
-
       chatService
         .postCreateChat({ memberIDs: friendIDs })
-        .then(({ data }) => {
+        .then(({ data, status }) => {
+          const isExisted = status !== 201;
           setIsLoading(false);
-          onCreateChatSuccess?.(data.chatRoomID);
+          onCreateChatSuccess(data, isExisted);
           onClickClose();
         })
         .catch(() => {

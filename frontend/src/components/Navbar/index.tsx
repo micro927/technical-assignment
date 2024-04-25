@@ -11,7 +11,7 @@ function Navbar({
 }) {
   return (
     <>
-      <nav className="fixed z-30 mb-[62px] h-[62px] w-full border-b border-b-gray-200 bg-slate-200 px-8 py-4 dark:border-b-gray-600 dark:bg-slate-800">
+      <nav className="mb-navbar height-navbar fixed z-30 w-full border-b border-b-neutral-300 bg-slate-200 px-8 py-4 dark:border-b-gray-600 dark:bg-slate-800">
         <div className="flex items-center justify-between">
           <button onClick={toggleMenuBar}>
             <HiMenu size={20} />
@@ -22,7 +22,7 @@ function Navbar({
           </div>
         </div>
       </nav>
-      <div className="h-[62px] bg-transparent" />
+      <div className="height-navbar bg-transparent" />
     </>
   );
 }

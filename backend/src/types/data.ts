@@ -7,7 +7,8 @@ export type UserBasicInfo = Pick<User, 'id' | 'name' | 'email'> & {
 export type ChatInfo = {
   id: string;
   members: Partial<UserBasicInfo>[];
-  lastMessages: Partial<Message>[];
+  lastMessage: Partial<Message> | null;
+  createdAt: Date;
 };
 
 export type AccessTokenJWTPayload = { user: UserBasicInfo };

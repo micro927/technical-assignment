@@ -9,6 +9,9 @@ import { AuthenticationContext } from '@/core/authentication/Context';
 import { VARIANTS } from '@/constants/variants';
 import { HiUsers } from 'react-icons/hi';
 import { ChatContext } from '../..';
+import ChatItem from './components/ChatItem';
+import FriendItem from './components/FriendItem';
+import Loading from '@/components/Loading';
 
 function MenuBar({
   isOpen,
@@ -21,8 +24,13 @@ function MenuBar({
     setIsOpenMenuBar,
   });
   const { userInformation } = useContext(AuthenticationContext);
-  const { openAddFriendModal, openCreateChatModal, friendList, chatList } =
-    useContext(ChatContext);
+  const {
+    openAddFriendModal,
+    openCreateChatModal,
+    friendList,
+    chatList,
+    isMainPageLoading,
+  } = useContext(ChatContext);
 
   return (
     <AnimatePresence>
@@ -42,8 +50,8 @@ function MenuBar({
             x: -120,
           }}
           className={clsx(
-            'absolute w-screen bg-slate-200 shadow sm:relative sm:w-[320px] md:w-[340px] dark:bg-slate-800',
-            'h-[calc(100vh-62px)] overflow-scroll',
+            'absolute left-0 top-[62px] z-[25] w-screen  bg-slate-200 shadow sm:relative sm:w-[340px] md:w-[340px] dark:bg-slate-800',
+            'h-[calc(100dvh)] overflow-scroll',
           )}
         >
           <div className="flex h-full w-full flex-col gap-6 px-3 py-8">
@@ -74,6 +82,7 @@ function MenuBar({
                 outline
                 onClick={openCreateChatModal}
                 className="!h-24 w-full"
+                disabled={friendList.length < 1}
               >
                 <div className="flex flex-col items-center text-sm">
                   <HiUsers size={22} />
@@ -81,25 +90,40 @@ function MenuBar({
                 </div>
               </Button>
             </div>
-            <div>
+            <div className="flex flex-col gap-0.5">
               <p className="font-semibold">Chats</p>
-
-              {chatList.map((chat) => (
-                <div>
-                  <p className="truncate">
-                    ({chat.members.length}) {chat.members.join(', ')}
-                  </p>
-                </div>
-              ))}
+              {isMainPageLoading ? (
+                <>
+                  <Loading />
+                  <Loading />
+                  <Loading />
+                  <Loading />
+                </>
+              ) : chatList.length ? (
+                chatList.map((chatInfo, key) => (
+                  <ChatItem key={key} chatInfo={chatInfo} />
+                ))
+              ) : (
+                <p className="ml-4 mt-1 text-xs text-slate-700 dark:text-slate-100">
+                  You have no chat, Click new chat button to start.
+                </p>
+              )}
             </div>
-            <div>
+            <div className="flex flex-col gap-0.5">
               <p className="font-semibold">Friends</p>
 
-              {friendList.map((friend) => (
-                <div>
-                  <p className="truncate">{friend.name}</p>
-                </div>
-              ))}
+              {isMainPageLoading ? (
+                <>
+                  <Loading />
+                  <Loading />
+                  <Loading />
+                  <Loading />
+                </>
+              ) : (
+                friendList.map((info, key) => (
+                  <FriendItem friend={info} key={key} />
+                ))
+              )}
             </div>
           </div>
         </motion.div>

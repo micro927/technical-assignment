@@ -1,23 +1,32 @@
 import useWebSocket from '@/utils/useWebSocket';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   emitRegisterActiveUser,
   emitUnRegisterActiveUser,
-  onFriendsActivityUpdated,
+  listenActiveUser,
+  listenFriendsActivityUpdated,
 } from '@/services/websocket/activity';
 import { AuthenticationContext } from '@/core/authentication/Context';
 import { useUserActivity } from '@/utils/useUserActivity';
 import userService from '@/services/api/user';
 import type { ChatInfo, UserBasicInfo } from '@/services/types/data';
+import type {
+  ChatInfoWithUnread,
+  UserBasicInfoWithActivity,
+} from '@/types/chat';
 import chatService from '@/services/api/chat';
-import type { ChatsResponse } from '@/services/types/response';
 import type { ChatContextType } from '@/types/chat';
+import { listenChatRoomUpdated } from '@/services/websocket/chat';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function useChatController() {
+  const navigate = useNavigate();
+  const { chatRoomID } = useParams();
   const { socket } = useWebSocket();
   const { userInformation } = useContext(AuthenticationContext);
   const { isActive } = useUserActivity();
 
+  const [isMainPageLoading, setIsMainPageLoading] = useState(false);
   const [isOpenAddFriendModal, setIsOpenAddFriendModal] = useState(false);
 
   const openAddFriendModal = () => setIsOpenAddFriendModal(true);
@@ -28,60 +37,159 @@ function useChatController() {
   const openCreateChatModal = () => setIsOpenCreateChatModal(true);
   const closeCreateChatModal = () => setIsOpenCreateChatModal(false);
 
-  const [chatList, setChatList] = useState<ChatsResponse>([]);
-  const [friendList, setFriendList] = useState<UserBasicInfo[]>([]);
+  const [chatList, setChatList] = useState<ChatInfoWithUnread[]>([]);
+  const [friendList, setFriendList] = useState<UserBasicInfoWithActivity[]>([]);
 
   const getFriendList = () => {
+    setIsMainPageLoading(true);
     userService
       .getFriends()
       .then(({ data }) => {
-        setFriendList(data);
+        setIsMainPageLoading(false);
+        setFriendList(data.map((friend) => ({ ...friend, online: false })));
       })
-      .catch(() => setFriendList([]));
+      .catch(() => {
+        setIsMainPageLoading(false);
+        setFriendList([]);
+      });
   };
 
   const getChatList = () => {
+    setIsMainPageLoading(true);
     chatService
       .getChats()
       .then(({ data }) => {
-        setChatList(data);
+        setIsMainPageLoading(false);
+        setChatList(
+          data
+            .map((chat) => ({ ...chat, unread: false }))
+            .sort((a, b) => a.members.length - b.members.length),
+        );
       })
-      .catch(() => setChatList([]));
+      .catch(() => {
+        setIsMainPageLoading(false);
+        setChatList([]);
+      });
   };
 
-  useEffect(() => {
-    getChatList();
-    getFriendList();
-  }, []);
-
-  const onFriendsUpdated = (friend: UserBasicInfo) => {
+  const onFriendAdded = (friend: UserBasicInfoWithActivity) => {
     setFriendList((prevFriendList) => ({
       friend,
       ...prevFriendList,
     }));
   };
-  const onChatsUpdated = (chat: ChatInfo) => {
+
+  const onChatAdded = (chat: ChatInfoWithUnread) => {
     setChatList((prevChatList) => ({
       chat,
       ...prevChatList,
     }));
   };
 
+  const onFriendListActivityUpdated = (friendID: string, online: boolean) => {
+    setFriendList((prevFriendList) =>
+      prevFriendList.map((prevFriend) => {
+        if (prevFriend.id !== friendID) return prevFriend;
+        if (prevFriend.online === online) return prevFriend;
+        return {
+          ...prevFriend,
+          online,
+        };
+      }),
+    );
+  };
+
+  const onGetActiveFriends = (activeFriendIDs: string[]) => {
+    setFriendList((prevFriendList) =>
+      prevFriendList.map((prevFriend) => {
+        const friendActivity = activeFriendIDs.includes(prevFriend.id);
+        return {
+          ...prevFriend,
+          online: friendActivity,
+        };
+      }),
+    );
+  };
+
+  const onChatListUpdated = (chatRoomID: string, unreadValue: boolean) => {
+    setChatList((prevChatList) =>
+      prevChatList.map((prevChat) => {
+        if (prevChat.id !== chatRoomID) return prevChat;
+
+        return {
+          ...prevChat,
+          unread: unreadValue,
+        };
+      }),
+    );
+  };
+
+  const onAddFriendSuccess = (friends: UserBasicInfo[]) => {
+    const friendsWithActivity = friends.map((friend) => ({
+      ...friend,
+      online: false,
+    }));
+    setFriendList((prevFriendList) =>
+      [...friendsWithActivity, ...prevFriendList].sort((a, b) =>
+        a.name < b.name ? -1 : 1,
+      ),
+    );
+  };
+  const onCreateChatSuccess = (chatInfo: ChatInfo, isExisted: boolean) => {
+    if (!isExisted) {
+      setChatList((prevChatList) =>
+        [{ ...chatInfo, unread: false }, ...prevChatList].sort(
+          (a, b) => a.members.length - b.members.length,
+        ),
+      );
+    }
+    navigate(chatInfo.id);
+  };
+
+  const setCurrentChatRoomRead = useCallback(() => {
+    if (chatRoomID) onChatListUpdated(chatRoomID, false);
+  }, [chatRoomID]);
+
   useEffect(() => {
-    if (socket)
-      onFriendsActivityUpdated(socket, (data) => {
-        if (userInformation?.id !== data?.userID)
-          alert(`found online friends', ${data?.userID}`);
+    getChatList();
+    getFriendList();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      listenFriendsActivityUpdated(socket, (data) => {
+        if (data?.userID) {
+          if (userInformation?.id !== data.userID) {
+            onFriendListActivityUpdated(data.userID, data.online);
+          }
+        }
       });
-  }, [socket, userInformation]);
+    }
+    return () => {
+      socket?.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      listenChatRoomUpdated(socket, (data) => {
+        if (data) {
+          if (!(isActive && data.chatRoomID === chatRoomID))
+            onChatListUpdated(data.chatRoomID, true);
+        }
+      });
+    }
+  }, [socket, chatRoomID, isActive]);
 
   useEffect(() => {
     if (socket) {
       if (isActive) {
         emitRegisterActiveUser(socket, {
           userID: userInformation?.id ?? '',
-          friendIDs: userInformation?.friends?.map(({ id }) => id) ?? [],
+          friendIDs: friendList.map(({ id }) => id),
         });
+        setCurrentChatRoomRead();
       } else {
         emitUnRegisterActiveUser(socket);
       }
@@ -90,24 +198,39 @@ function useChatController() {
     return () => {
       if (socket) emitUnRegisterActiveUser(socket);
     };
-  }, [socket, isActive, userInformation]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, isActive]);
+
+  useEffect(() => {
+    if (socket) {
+      listenActiveUser(socket, (friendIDs) => {
+        if (friendIDs !== null && friendIDs !== undefined)
+          onGetActiveFriends(friendIDs);
+      });
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    setCurrentChatRoomRead();
+  }, [setCurrentChatRoomRead]);
 
   const chatContext: ChatContextType = {
     friendList,
     chatList,
     openAddFriendModal,
     openCreateChatModal,
+    onChatAdded,
+    onFriendAdded,
+    isMainPageLoading,
+    socket,
   };
 
-  const onAddFriendSuccess = () => {};
-  const onCreateChatSuccess = () => {};
   return {
     userInformation,
     isActive,
     chatList,
     friendList,
-    onChatsUpdated,
-    onFriendsUpdated,
     isOpenCreateChatModal,
     isOpenAddFriendModal,
     closeCreateChatModal,
@@ -115,6 +238,7 @@ function useChatController() {
     chatContext,
     onAddFriendSuccess,
     onCreateChatSuccess,
+    chatRoomID,
   };
 }
 

@@ -7,10 +7,11 @@ import type { SearchFriendFormValues } from '@/types/chat';
 import { HiSearch, HiX } from 'react-icons/hi';
 import FriendCheckboxes from '@/pages/Chat/components/FriendCheckBoxes';
 import type { AddFriendsRequestBody } from '@/services/types/request';
+import type { UserBasicInfo } from '@/services/types/data';
 
 function AddFriendsModal(
   props: BaseModalProps & {
-    onAddFriendSuccess?: (count?: number) => void;
+    onAddFriendSuccess: (friends: UserBasicInfo[]) => void;
   },
 ) {
   const { isOpen, onClose, onAddFriendSuccess } = props;
@@ -42,7 +43,8 @@ function AddFriendsModal(
         </div>
         <div className="w-full">
           <p className="text-left text-xs text-gray-600 md:text-xs dark:text-gray-200">
-            Search user by email or name
+            Search user by email or name{' '}
+            <span className="block sm:inline">(at lease 3 letters)</span>
           </p>
         </div>
         <form
@@ -93,12 +95,11 @@ function AddFriendsModal(
                 </div>
               </div>
             </div>
-            {/* {addFriendsForm.watch('friendIDs')} */}
             <Button
               className="w-full"
               disabled={!addFriendsForm.formState.isValid || isLoading}
             >
-              Add {addFriendsForm.watch('friendIDs').length} friend(s)
+              Add {addFriendsForm.watch('friendIDs').length} friend (s)
             </Button>
           </form>
         )}

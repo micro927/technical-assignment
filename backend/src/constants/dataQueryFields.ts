@@ -16,15 +16,16 @@ export const userWithFriendSelectedFields =
     },
   });
 
-export const chatRoomsSelectedFields =
+export const chatSelectedFields =
   Prisma.validator<Prisma.ChatRoomDefaultArgs>()({
     select: {
       id: true,
+      createdAt: true,
       messages: {
         orderBy: { createdAt: 'desc' },
         take: 1,
       },
-      members: { select: { name: true } },
+      members: { select: { name: true, id: true } },
     },
   });
 
@@ -32,6 +33,6 @@ export const chatRoomSelectedFields =
   Prisma.validator<Prisma.ChatRoomDefaultArgs>()({
     include: {
       messages: true,
-      members: true,
+      members: { select: userSelectedFields.select },
     },
   });

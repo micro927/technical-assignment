@@ -8,5 +8,5 @@ export enum PRIVATE_ROUTE {
 
 export enum CHAT_ROUTE {
   HOME = '/',
-  ROOM = ':chatId',
+  ROOM = ':chatRoomID',
 }

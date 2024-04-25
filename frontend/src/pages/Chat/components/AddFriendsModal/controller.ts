@@ -12,7 +12,7 @@ function useAddFriendModalController({
   onAddFriendSuccess,
 }: {
   onClose: () => void;
-  onAddFriendSuccess?: (count?: number) => void;
+  onAddFriendSuccess: (friends: UserBasicInfo[]) => void;
 }) {
   const [friendsSearchResult, setFriendsSearchResult] = useState<
     UserBasicInfo[]
@@ -39,7 +39,7 @@ function useAddFriendModalController({
       userService
         .getUsers({
           search,
-          limit: 20,
+          limit: 30,
         })
         .then(({ data }) => {
           setFriendsSearchResult(
@@ -59,15 +59,12 @@ function useAddFriendModalController({
 
   const onSubmitAddFriends = addFriendsForm.handleSubmit(
     ({ friendIDs }: AddFriendsRequestBody) => {
-      console.log(friendIDs);
-
       setIsLoading(true);
-
       userService
         .postAddFriends({ friendIDs })
-        .then(() => {
+        .then((data) => {
           setIsLoading(false);
-          onAddFriendSuccess?.(friendIDs.length);
+          onAddFriendSuccess(data);
           onClickClose();
         })
         .catch(() => {

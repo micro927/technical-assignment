@@ -10,8 +10,6 @@ function ChatMainPage() {
   const { isOpenMenuBar, setIsOpenMenuBar } =
     useOutletContext<LayoutOutletContext>();
   const {
-    userInformation,
-    isActive,
     chatContext,
     isOpenAddFriendModal,
     closeAddFriendModal,
@@ -19,6 +17,7 @@ function ChatMainPage() {
     closeCreateChatModal,
     onAddFriendSuccess,
     onCreateChatSuccess,
+    chatRoomID,
   } = useChatController();
 
   return (
@@ -35,10 +34,8 @@ function ChatMainPage() {
       />
       <div className="flex h-full w-full">
         <MenuBar setIsOpenMenuBar={setIsOpenMenuBar} isOpen={isOpenMenuBar} />
-        <div>
-          <Outlet />
-          {isActive && 'isActive'}
-          <p>{userInformation?.id}</p>
+        <div className="h-full w-full flex-1">
+          <Outlet key={chatRoomID} />
         </div>
       </div>
     </MainPageChatContext.Provider>

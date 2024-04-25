@@ -2,6 +2,7 @@ import { ZodRawShape, z } from 'zod';
 
 //NOTE: add new validation schema here
 const schemas = {
+  content: z.string(),
   email: z
     .string()
     .email('You must enter a valid email')
@@ -10,7 +11,7 @@ const schemas = {
     .string()
     .min(4, 'Password is too short - must be at least 4 chars.')
     .min(1, 'Please enter your password.'),
-  search: z.string().min(1, 'Please enter your search data.').max(80),
+  search: z.string().min(1, 'Please enter your search data.').min(3).max(80),
   friendIDs: z.array(z.string().min(1)).min(1),
 };
 

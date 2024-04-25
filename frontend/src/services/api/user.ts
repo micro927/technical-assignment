@@ -3,7 +3,7 @@ import * as SERVICE from '@/services/types/route';
 import { UserBasicInfo } from '../types/data';
 import {
   UserInfoResponse,
-  type CommonResponse,
+  type AddFriendsResponse,
   type UsersResponse,
 } from '../types/response';
 import type { AddFriendsRequestBody, UsersRequestBody } from '../types/request';
@@ -31,7 +31,7 @@ const getUsers = async (params: UsersRequestBody) => {
 
 const postAddFriends = async (params: AddFriendsRequestBody) => {
   return await userAPI
-    .post<CommonResponse>(
+    .post<AddFriendsResponse>(
       SERVICE.USER_ROUTE.FRIENDS,
       params,
       getAuthorizationHeader(),

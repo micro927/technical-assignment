@@ -9,7 +9,7 @@ import {
 } from '@/types/request.js';
 import {
   UserInfoResponse,
-  type CommonResponse,
+  type AddFriendsResponse,
   type UsersResponse,
 } from '@/types/response.js';
 import type { BasicObject } from '@/types/utils.js';
@@ -39,11 +39,6 @@ const getInfo: AppHandler<
 const getFriends: AppHandler<UserBasicInfo[]> = async (_req, res) => {
   try {
     const id = res.locals?.id ?? '';
-    // prisma.user
-    //   .findUnique({
-    //     select: { friends: userSelectedFields },
-    //     where: { id },
-    //   })
     prisma.user
       .findMany(
         Object.assign(userSelectedFields, {
@@ -72,19 +67,30 @@ const getUsers: AppHandler<
     const search = (req.query?.search ?? '').trim();
     const limit = parseNumber(req.query?.limit);
     if (search === '') return res.status(HTTP_STATUS.NO_CONTENT_204).send([]);
+    if (search.length < 3) return res.status(HTTP_STATUS.BAD_REQUEST_400);
     prisma.user
-      .findMany(
-        Object.assign(userSelectedFields, {
-          where: {
-            OR: [
-              { email: { contains: search } },
-              { name: { contains: search } },
-            ],
-            NOT: { OR: [{ id }, { friendIDs: { has: id } }] },
-          },
-          take: limit,
-        }),
-      )
+      .findMany({
+        select: userSelectedFields.select,
+        where: {
+          OR: [
+            {
+              email: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+          id: { not: id },
+          NOT: { friendIDs: { has: id } },
+        },
+        take: limit,
+      })
       .then((users) => res.status(HTTP_STATUS.OK_200).send(users))
       .catch(() => res.sendStatus(HTTP_STATUS.NO_CONTENT_204).send([]));
   } catch (error) {
@@ -92,7 +98,7 @@ const getUsers: AppHandler<
   }
 };
 
-const postAddFriends: AppHandler<CommonResponse, AddFriendsRequestBody> = (
+const postAddFriends: AppHandler<AddFriendsResponse, AddFriendsRequestBody> = (
   req,
   res,
 ) => {
@@ -109,6 +115,7 @@ const postAddFriends: AppHandler<CommonResponse, AddFriendsRequestBody> = (
         data: {
           friendIDs: { push: friendID },
         },
+        select: userSelectedFields.select,
       }),
       prisma.user.update({
         where: {
@@ -120,20 +127,18 @@ const postAddFriends: AppHandler<CommonResponse, AddFriendsRequestBody> = (
             push: id,
           },
         },
+        select: userSelectedFields.select,
       }),
     ];
 
     prisma
       .$transaction(friendIDs.map((friendID) => addFriend(id, friendID)).flat())
-      .then(() => {
-        return res.status(HTTP_STATUS.CREATED_201).send({
-          success: true,
-        });
+      .then((result) => {
+        const friends = result.filter((data) => data.id !== id);
+        return res.status(HTTP_STATUS.CREATED_201).send(friends);
       })
       .catch(() => {
-        return res.status(HTTP_STATUS.BAD_REQUEST_400).send({
-          success: false,
-        });
+        return res.status(HTTP_STATUS.BAD_REQUEST_400).send([]);
       });
   } catch (e) {
     return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500);
