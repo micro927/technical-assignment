@@ -28,7 +28,7 @@ function ChatItem({ chatInfo }: { chatInfo: ChatInfoWithUnread }) {
     .map((member) => member.name);
 
   const title = isGroupChat
-    ? ` ${counter} ${friendNames.join(', ')}`
+    ? ` ${counter} ${friendNames.join(', ')}, me`
     : friendNames[0];
 
   return (

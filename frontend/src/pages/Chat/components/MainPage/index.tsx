@@ -35,7 +35,7 @@ function ChatMainPage() {
       <div className="flex h-full w-full">
         <MenuBar setIsOpenMenuBar={setIsOpenMenuBar} isOpen={isOpenMenuBar} />
         <div className="h-full w-full flex-1">
-          <Outlet key={chatRoomID} />
+          <Outlet context={useOutletContext()} key={chatRoomID} />
         </div>
       </div>
     </MainPageChatContext.Provider>

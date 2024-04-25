@@ -50,8 +50,8 @@ function MenuBar({
             x: -120,
           }}
           className={clsx(
-            'absolute left-0 top-[62px] z-[25] w-screen  bg-slate-200 shadow sm:relative sm:w-[340px] md:w-[340px] dark:bg-slate-800',
-            'h-[calc(100dvh)] overflow-scroll',
+            'absolute left-0 z-[25] w-screen bg-slate-200  shadow sm:relative sm:w-[340px] sm:pt-[62px] md:w-[340px] dark:bg-slate-800',
+            'h-[calc(100svh)] overflow-scroll sm:h-[calc(100dvh)]',
           )}
         >
           <div className="flex h-full w-full flex-col gap-6 px-3 py-8">

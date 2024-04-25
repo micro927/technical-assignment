@@ -22,7 +22,7 @@ function Layout() {
       className=" min-w-screen flex h-screen flex-col bg-gray-100 text-gray-900 transition-colors duration-100 dark:bg-gray-800 dark:text-white"
     >
       <Navbar isLoggedIn={isLoggedIn} toggleMenuBar={toggleMenuBar} />
-      <div className="flex h-[calc(100dvh)]">
+      <div className="flex h-[calc(100svh)] sm:h-[calc(100vh)]">
         <Outlet context={outletContext} />
       </div>
     </div>

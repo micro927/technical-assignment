@@ -35,7 +35,7 @@ function ChatRoom() {
             ) : (
               <Avatar size={24} name={chatTitle} />
             )}
-            <div className="flex items-center text-sm">
+            <div className="flex items-center gap-1 text-sm">
               <p className="max-w-[250px] truncate md:max-w-[300px]">
                 {chatTitle}
               </p>
@@ -47,7 +47,7 @@ function ChatRoom() {
       <div
         id="chatBox"
         ref={chatBoxRef}
-        className="mb-14 mt-10 h-full overflow-scroll px-6 py-8"
+        className="mb-6 mt-10 h-full overflow-scroll px-6 py-8 pt-8 sm:pt-24"
       >
         <div className=" flex w-full flex-col gap-1">
           {isLoading ? (
