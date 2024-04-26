@@ -35,7 +35,7 @@
 
 ## Test Instruction
 
-- I have created users for testing that use the pattern `a-z * 4 + '@example.com'` as a name. Here are examples:
+- I have created users for testing that use the pattern `a-z * 4 + '@example.com'` as a name. Here are all user email list:
 
 ```bash
 aaaa@example.com
