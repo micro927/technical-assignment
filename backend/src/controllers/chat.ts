@@ -97,7 +97,7 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
   try {
     const { memberIDs } = req.body;
     const { id: userID } = res.locals;
-    const memberIDsIncludeSelf = [...memberIDs, userID];
+    const memberIDsIncludeSelf = [...memberIDs, userID].sort();
     if (memberIDs.length === 0)
       return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
 
