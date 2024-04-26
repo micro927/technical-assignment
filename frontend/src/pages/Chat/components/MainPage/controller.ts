@@ -144,13 +144,10 @@ function useChatController() {
   };
   const onCreateChatSuccess = (chatInfo: ChatInfo, isExisted: boolean) => {
     if (!isExisted) {
-      setChatList((prevChatList) =>
-        [{ ...chatInfo, unread: false }, ...prevChatList].sort(
-          (a, b) => a.members.length - b.members.length,
-        ),
-      );
+      navigate(chatInfo.id);
+    } else {
+      navigate(chatInfo.id);
     }
-    navigate(chatInfo.id);
   };
 
   const setCurrentChatRoomRead = useCallback(() => {
@@ -197,7 +194,9 @@ function useChatController() {
   useEffect(() => {
     if (socket) {
       listenChatRoomCreated(socket, (chatInfo) => {
-        if (chatInfo) {
+        console.log('fe', chatInfo);
+
+        if (chatInfo && chatInfo.id) {
           setChatList((prevChatList) => {
             return [
               {
