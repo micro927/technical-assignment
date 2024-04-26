@@ -19,6 +19,7 @@ import {
 } from '@/types/response.js';
 import type { ChatRoomUpdatedData } from '@/types/socketData.js';
 import type { BasicObject } from '@/types/utils.js';
+import { compareStringArray } from '@/utils/compareStringArray.js';
 import prisma from '@/utils/db.js';
 import { transformSelectedChatToChatInfo } from '@/utils/transformSelectedChatToChatInfo.js';
 import type { Message } from '@prisma/client';
@@ -90,10 +91,10 @@ const postSendMessage: AppHandler<
   }
 };
 
-const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
-  req,
-  res,
-) => {
+const postCreateChat: AppHandler<
+  ChatCreateResponse,
+  ChatCreateRequestBody
+> = async (req, res) => {
   try {
     const { memberIDs } = req.body;
     const { id: userID } = res.locals;
@@ -101,39 +102,49 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
     if (memberIDs.length === 0)
       return res.sendStatus(HTTP_STATUS.BAD_REQUEST_400);
 
-    prisma.chatRoom
-      .findFirstOrThrow({
-        select: chatSelectedFields.select,
-        where: { memberIDs: { hasEvery: memberIDsIncludeSelf } },
-      })
-      .then((data) => {
-        const chatInfo = transformSelectedChatToChatInfo(data);
-        return res.status(HTTP_STATUS.OK_200).send(chatInfo);
-      })
-      .catch(() => {
-        prisma.chatRoom
-          .create({
-            select: chatSelectedFields.select,
-            data: {
-              memberIDs: memberIDsIncludeSelf,
-            },
-          })
-          .then(async (data) => {
-            const chatInfo = transformSelectedChatToChatInfo(data);
+    const existedChatRooms = await prisma.chatRoom.findMany({
+      select: chatSelectedFields.select,
+      where: {
+        memberIDs: {
+          hasEvery: memberIDsIncludeSelf,
+        },
+      },
+    });
 
-            const allClients = await res.locals.io.sockets.fetchSockets();
+    const exactlyChatRoom = existedChatRooms.find((chatroom) => {
+      const chatRoomMemberIDs = chatroom.members.map((member) => member.id);
+      return compareStringArray(chatRoomMemberIDs, memberIDsIncludeSelf);
+    });
 
-            const memberSocketIDs = allClients
-              .filter((client) => memberIDs.includes(client.data.userID))
-              .map((member) => member.id);
+    if (exactlyChatRoom) {
+      const chatInfo = transformSelectedChatToChatInfo(exactlyChatRoom);
+      return res.status(HTTP_STATUS.OK_200).send(chatInfo);
+    } else {
+      prisma.chatRoom
+        .create({
+          select: chatSelectedFields.select,
+          data: {
+            memberIDs: memberIDsIncludeSelf,
+          },
+        })
+        .then(async (data) => {
+          const chatInfo = transformSelectedChatToChatInfo(data);
 
-            res.locals.io.sockets
-              .to(memberSocketIDs)
-              .emit(SOCKET_EVENT.CHATROOM_CREATED, chatInfo);
+          const allClients = await res.locals.io.sockets.fetchSockets();
 
-            return res.status(HTTP_STATUS.CREATED_201).send(chatInfo);
-          });
-      });
+          const memberSocketIDs = allClients
+            .filter((client) =>
+              memberIDsIncludeSelf.includes(client.data.userID),
+            )
+            .map((member) => member.id);
+
+          res.locals.io.sockets
+            .to(memberSocketIDs)
+            .emit(SOCKET_EVENT.CHATROOM_CREATED, chatInfo);
+
+          return res.status(HTTP_STATUS.CREATED_201).send(chatInfo);
+        });
+    }
   } catch (e) {
     console.log(e);
     return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR_500);

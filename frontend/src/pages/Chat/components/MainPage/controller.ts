@@ -31,7 +31,8 @@ function useChatController() {
   const { socket } = useWebSocket();
   const { userInformation } = useContext(AuthenticationContext);
   const { isActive } = useUserActivity();
-  const { isOnline } = useOutletContext<LayoutOutletContext>();
+  const { isOnline, setIsOpenMenuBar, isMobile } =
+    useOutletContext<LayoutOutletContext>();
 
   const [isMainPageLoading, setIsMainPageLoading] = useState(false);
   const [isOpenAddFriendModal, setIsOpenAddFriendModal] = useState(false);
@@ -143,6 +144,7 @@ function useChatController() {
     );
   };
   const onCreateChatSuccess = (chatInfo: ChatInfo, isExisted: boolean) => {
+    isMobile && setIsOpenMenuBar(false);
     if (!isExisted) {
       navigate(chatInfo.id);
     } else {

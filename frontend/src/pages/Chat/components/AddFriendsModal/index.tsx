@@ -115,6 +115,7 @@ function AddFriendsModal(
                           friendList={friendsSearchResult}
                           control={addFriendsForm.control}
                           name="friendIDs"
+                          isLoading={isLoading}
                         />
                       </div>
                     </div>

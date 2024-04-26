@@ -1,4 +1,5 @@
 import Avatar from '@/components/Avatar';
+import Loading from '@/components/Loading';
 import type { UserBasicInfo } from '@/services/types/data';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -14,11 +15,13 @@ function FriendCheckboxes<FormValues extends FieldValues>({
   control,
   name,
   className = '',
+  isLoading = false,
 }: {
   friendList: UserBasicInfo[];
   control: Control<FormValues>;
   name: Path<FormValues>;
   className?: string;
+  isLoading?: boolean;
 }) {
   const { field } = useController({
     control,
@@ -26,7 +29,15 @@ function FriendCheckboxes<FormValues extends FieldValues>({
   });
   const [value, setValue] = useState<(string | null)[]>([]);
 
-  return (
+  return isLoading ? (
+    <>
+      <Loading className="h-[42px]" />
+      <Loading className="h-[42px]" />
+      <Loading className="h-[42px]" />
+      <Loading className="h-[42px]" />
+      <Loading className="h-[42px]" />
+    </>
+  ) : (
     <>
       {friendList.map(({ id, name: userName }, index) => (
         <label
