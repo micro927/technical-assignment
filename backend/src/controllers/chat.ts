@@ -104,7 +104,7 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
     prisma.chatRoom
       .findFirstOrThrow({
         select: chatSelectedFields.select,
-        where: { memberIDs: { equals: memberIDsIncludeSelf } },
+        where: { memberIDs: { hasEvery: memberIDsIncludeSelf } },
       })
       .then((data) => {
         const chatInfo = transformSelectedChatToChatInfo(data);

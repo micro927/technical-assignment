@@ -67,7 +67,7 @@ function useChatRoomController() {
       const isMyMessage = userInformation?.id === senderID;
       const senderName = isMyMessage
         ? userInformation?.name ?? ''
-        : mapper?.[senderID] ?? 'err';
+        : mapper?.[senderID] ?? '-';
       return {
         id,
         senderName,
