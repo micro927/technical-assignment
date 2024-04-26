@@ -4,12 +4,15 @@ import { HiHome, HiMenu, HiOutlineLogout } from 'react-icons/hi';
 import { AuthenticationContext } from '@/core/authentication/Context';
 import { useNavigate } from 'react-router-dom';
 import { CHAT_ROUTE } from '@/constants/route';
+import { RiWifiOffLine } from 'react-icons/ri';
 
 function Navbar({
   isLoggedIn,
+  isOnline,
   toggleMenuBar,
 }: {
   isLoggedIn: boolean;
+  isOnline: boolean;
   toggleMenuBar: () => void;
 }) {
   function LogoutButton() {
@@ -38,12 +41,25 @@ function Navbar({
     );
   }
 
+  function OfflineIcon() {
+    return (
+      <div className="p-1">
+        {!isOnline ? (
+          <RiWifiOffLine className="animate-pulse text-red-500" size={20} />
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       <nav className="mb-navbar height-navbar fixed z-30 w-full border-b border-b-neutral-300 bg-slate-200 px-8 py-4 dark:border-b-gray-600 dark:bg-slate-800">
         <div className="flex items-center justify-between">
           <ToggleButton />
           <div className="flex gap-2 md:gap-3">
+            <OfflineIcon />
             <HomeButton />
             <ThemeSwitcher />
             {isLoggedIn && <LogoutButton />}

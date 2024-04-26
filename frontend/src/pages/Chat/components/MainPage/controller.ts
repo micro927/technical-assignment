@@ -22,7 +22,8 @@ import {
   stopListenChatRoomCreated,
   stopListenChatRoomUpdated,
 } from '@/services/websocket/chat';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import type { LayoutOutletContext } from '@/types/userInterface';
 
 function useChatController() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function useChatController() {
   const { socket } = useWebSocket();
   const { userInformation } = useContext(AuthenticationContext);
   const { isActive } = useUserActivity();
+  const { isOnline } = useOutletContext<LayoutOutletContext>();
 
   const [isMainPageLoading, setIsMainPageLoading] = useState(false);
   const [isOpenAddFriendModal, setIsOpenAddFriendModal] = useState(false);
@@ -156,9 +158,11 @@ function useChatController() {
   }, [chatRoomID]);
 
   useEffect(() => {
-    getChatList();
-    getFriendList();
-  }, []);
+    if (isOnline) {
+      getChatList();
+      getFriendList();
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (socket) {

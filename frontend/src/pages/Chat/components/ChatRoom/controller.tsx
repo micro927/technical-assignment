@@ -30,7 +30,8 @@ function useChatRoomController() {
   const { userInformation } = useContext(AuthenticationContext);
   const { chatRoomID } = useParams();
   const navigate = useNavigate();
-  const { isOpenMenuBar, isMobile } = useOutletContext<LayoutOutletContext>();
+  const { isOpenMenuBar, isMobile, isOnline } =
+    useOutletContext<LayoutOutletContext>();
 
   const [isLoading, setIsLoading] = useState(false);
   const [messageItems, setMessageItems] = useState<ChatRoomMessageItem[]>([]);
@@ -184,9 +185,9 @@ function useChatRoomController() {
   }, [socket, chatRoomID]);
 
   useEffect(() => {
-    if (chatRoomID) getChat();
+    if (chatRoomID && isOnline) getChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isOnline]);
 
   const chatBoxMargin = useMemo(
     () => isMobile || isOpenMenuBar,

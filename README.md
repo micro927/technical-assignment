@@ -11,23 +11,23 @@
 
 3. Install packages and generate Prisma model: Open terminal and run
 
-    ```bash
-    npm run dev:init
-    ```
+   ```bash
+   npm run dev:init
+   ```
 
 4. Start the backend server: Open terminal and run
 
-    ```bash
-    npm run dev:backend
-    ```
+   ```bash
+   npm run dev:backend
+   ```
 
    You can test it by using `http://localhost:6789/test`. If the server is working, it will return "hello world".
 
 5. Start the frontend server: Open another terminal and run
 
-    ```bash
-    npm run dev:frontend
-    ```
+   ```bash
+   npm run dev:frontend
+   ```
 
    You can access the website by clicking the link in the terminal or going to `http://localhost:5432`.
 
@@ -66,7 +66,7 @@ zzz@example.com
 ### Backend
 
 - Express + TypeScript
-- Database: __MongoDB__
+- Database: **MongoDB**
 - Prisma
 - socket.io
 

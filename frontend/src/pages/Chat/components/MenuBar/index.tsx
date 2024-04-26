@@ -12,6 +12,9 @@ import { ChatContext } from '../..';
 import ChatItem from './components/ChatItem';
 import FriendItem from './components/FriendItem';
 import Loading from '@/components/Loading';
+import { useOutletContext } from 'react-router-dom';
+import { LayoutOutletContext } from '@/types/userInterface';
+import { RiWifiOffLine } from 'react-icons/ri';
 
 function MenuBar({
   isOpen,
@@ -31,6 +34,7 @@ function MenuBar({
     chatList,
     isMainPageLoading,
   } = useContext(ChatContext);
+  const { isOnline } = useOutletContext<LayoutOutletContext>();
 
   return (
     <AnimatePresence>
@@ -91,8 +95,15 @@ function MenuBar({
               </Button>
             </div>
             <div className="flex flex-col gap-0.5">
+              {!isOnline && (
+                <div className="flex gap-2 px-3 py-4 text-xs text-red-600 dark:text-red-500">
+                  <RiWifiOffLine size={16} /> Network offline, please check your
+                  internet connection.
+                </div>
+              )}
               <p className="font-semibold">Chats</p>
-              {isMainPageLoading ? (
+
+              {isMainPageLoading || !isOnline ? (
                 <>
                   <Loading />
                   <Loading />
@@ -112,7 +123,7 @@ function MenuBar({
             <div className="flex flex-col gap-0.5">
               <p className="font-semibold">Friends</p>
 
-              {isMainPageLoading ? (
+              {isMainPageLoading || !isOnline ? (
                 <>
                   <Loading />
                   <Loading />
