@@ -6,7 +6,6 @@ import { createServer } from 'http';
 import { checkPrismaConnection } from './middleware/checkPrismaConnection.js';
 import createWebSocketMiddleware from './middleware/websocket.js';
 import router from './routes/index.js';
-import devRouter from './dev.js';
 
 configDotenv({ path: `../.env` });
 const { BACKEND_PORT, NODE_ENV } = process.env;
@@ -26,7 +25,6 @@ app.use(express.static('public'));
 app.use(checkPrismaConnection);
 app.use(websocket);
 app.use(router);
-app.use(devRouter);
 app.get('/test', async (_req, res) => {
   res.send({ hello: 'world' });
 });

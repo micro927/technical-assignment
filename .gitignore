@@ -25,4 +25,7 @@ dist-ssr
 
 node_modules/
 .env
+
+# local dev tools
 sync.sh
+backend/src/dev.ts

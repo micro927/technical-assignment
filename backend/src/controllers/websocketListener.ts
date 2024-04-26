@@ -1,4 +1,4 @@
-import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js'; //.js
+import { SOCKET_EVENT, SOCKET_ROOM } from '@/constants/websocket.js';
 import type { WebSocketListenerController } from '@/types/app.js';
 import {
   RegisterActiveUserData,
@@ -56,14 +56,12 @@ const joinChatRoomController: WebSocketListenerController = ({
 }) => {
   socket.on(SOCKET_EVENT.JOIN_CHATROOM, async (chatRoomID?: string) => {
     if (chatRoomID && io) socket.join(chatRoomID);
-    console.log(socket.id, 'has join ', chatRoomID);
   });
 };
 
 const leaveChatRoomController: WebSocketListenerController = ({ socket }) => {
   socket.on(SOCKET_EVENT.LEAVE_CHATROOM, (chatRoomID?: string) => {
     if (chatRoomID) socket.leave(chatRoomID);
-    console.log(socket.id, 'has left ', chatRoomID);
   });
 };
 
