@@ -7,7 +7,7 @@
 
 1. Install `node.js`. I use node version `(20.10.0)`.
 
-2. Add a `.env` file to the root of the project (same folder as `.env.example`).
+2. Add a `.env` file to the root of the project (same folder as `.env.example` )
 
 3. Install packages and generate Prisma model: Open terminal and run
 
