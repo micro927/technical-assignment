@@ -16,7 +16,12 @@ import type {
 } from '@/types/chat';
 import chatService from '@/services/api/chat';
 import type { ChatContextType } from '@/types/chat';
-import { listenChatRoomUpdated } from '@/services/websocket/chat';
+import {
+  listenChatRoomCreated,
+  listenChatRoomUpdated,
+  stopListenChatRoomCreated,
+  stopListenChatRoomUpdated,
+} from '@/services/websocket/chat';
 import { useNavigate, useParams } from 'react-router-dom';
 
 function useChatController() {
@@ -175,12 +180,36 @@ function useChatController() {
     if (socket) {
       listenChatRoomUpdated(socket, (data) => {
         if (data) {
-          if (!(isActive && data.chatRoomID === chatRoomID))
+          if (!(isActive && chatRoomID === data.chatRoomID))
             onChatListUpdated(data.chatRoomID, true);
         }
       });
     }
-  }, [socket, chatRoomID, isActive]);
+    return () => {
+      if (socket) stopListenChatRoomUpdated(socket);
+    };
+  }, [socket, isActive, chatRoomID]);
+
+  useEffect(() => {
+    if (socket) {
+      listenChatRoomCreated(socket, (chatInfo) => {
+        if (chatInfo) {
+          setChatList((prevChatList) => {
+            return [
+              {
+                ...chatInfo,
+                unread: true,
+              },
+              ...prevChatList,
+            ];
+          });
+        }
+      });
+    }
+    return () => {
+      if (socket) stopListenChatRoomCreated(socket);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (socket) {
@@ -189,12 +218,10 @@ function useChatController() {
           userID: userInformation?.id ?? '',
           friendIDs: friendList.map(({ id }) => id),
         });
-        setCurrentChatRoomRead();
       } else {
         emitUnRegisterActiveUser(socket);
       }
     }
-
     return () => {
       if (socket) emitUnRegisterActiveUser(socket);
     };
@@ -212,8 +239,8 @@ function useChatController() {
   }, [socket]);
 
   useEffect(() => {
-    setCurrentChatRoomRead();
-  }, [setCurrentChatRoomRead]);
+    if (isActive) setCurrentChatRoomRead();
+  }, [isActive, setCurrentChatRoomRead]);
 
   const chatContext: ChatContextType = {
     friendList,
@@ -224,6 +251,7 @@ function useChatController() {
     onFriendAdded,
     isMainPageLoading,
     socket,
+    onChatListUpdated,
   };
 
   return {

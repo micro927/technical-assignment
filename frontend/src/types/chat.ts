@@ -26,6 +26,7 @@ export type ChatContextType = {
   onChatAdded: (chat: ChatInfoWithUnread) => void;
   isMainPageLoading: boolean;
   socket: Socket | undefined;
+  onChatListUpdated: (chatRoomID: string, unreadValue: boolean) => void;
 };
 
 export type ChatRoomMessageItem = {

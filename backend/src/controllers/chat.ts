@@ -118,8 +118,18 @@ const postCreateChat: AppHandler<ChatCreateResponse, ChatCreateRequestBody> = (
               memberIDs: memberIDsIncludeSelf,
             },
           })
-          .then((data) => {
+          .then(async (data) => {
             const chatInfo = transformSelectedChatToChatInfo(data);
+
+            const allClients = await res.locals.io.sockets.fetchSockets();
+
+            const memberSocketIDs = allClients
+              .filter((client) => memberIDs.includes(client.data.userID))
+              .map((member) => member.id);
+
+            res.locals.io.sockets
+              .to(memberSocketIDs)
+              .emit(SOCKET_EVENT.CHATROOM_CREATED, chatInfo);
 
             return res.status(HTTP_STATUS.CREATED_201).send(chatInfo);
           });

@@ -8,6 +8,7 @@ export enum SOCKET_EVENT {
   UPDATE_USER_ACTIVITY = 'update-user-activity',
   FRIENDS_ACTIVITY_UPDATED = 'friends-activity-updated',
   CHATROOM_UPDATED = 'chatroom-updated',
+  CHATROOM_CREATED = 'chatroom-created',
 }
 
 export enum SOCKET_ROOM {

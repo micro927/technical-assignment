@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 function useThemeProviderController() {
   const themeLocalStorage: Theme =
-    (window.localStorage.getItem('theme') as Theme) ?? 'system';
+    (window.localStorage.getItem('theme') as Theme) ?? 'light';
   const [userTheme, setUserTheme] = useState<Theme>(themeLocalStorage);
 
   const addDarkClass = () => document.documentElement.classList.add('dark');

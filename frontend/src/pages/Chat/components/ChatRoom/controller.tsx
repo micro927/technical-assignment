@@ -17,23 +17,28 @@ import {
   useState,
 } from 'react';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ChatContext } from '../..';
 import { AuthenticationContext } from '@/core/authentication/Context';
 import { scrollToBottom } from '@/utils/useScrollToBottom';
 import type { UserBasicInfo } from '@/services/types/data';
+import type { LayoutOutletContext } from '@/types/userInterface';
+import { CHAT_ROUTE } from '@/constants/route';
 
 function useChatRoomController() {
   const { socket } = useContext(ChatContext);
   const { userInformation } = useContext(AuthenticationContext);
-  const chatSchema = createZodObjectSchema('content');
   const { chatRoomID } = useParams();
+  const navigate = useNavigate();
+  const { isOpenMenuBar, isMobile } = useOutletContext<LayoutOutletContext>();
 
   const [isLoading, setIsLoading] = useState(false);
   const [messageItems, setMessageItems] = useState<ChatRoomMessageItem[]>([]);
   const [memberList, setMemberList] = useState<UserBasicInfo[]>([]);
   const [tempLastMessage, setTempLastMessage] = useState<string | null>();
   const chatBoxRef = useRef<HTMLDivElement>(null);
+
+  const chatSchema = createZodObjectSchema('content');
   const chatForm = useForm<ChatFormValues>({
     mode: 'onChange',
     defaultValues: { content: '' },
@@ -45,7 +50,6 @@ function useChatRoomController() {
     const mappingObject = {} as Record<string, string>;
 
     const objectList = members.map((member) => {
-      console.log(member.id, member.name);
       return {
         [member.id]: member.name,
       };
@@ -102,6 +106,7 @@ function useChatRoomController() {
           setTimeout(() => setIsLoading(false));
         })
         .catch(() => {
+          navigate(`${CHAT_ROUTE.HOME}`);
           setIsLoading(false);
           setMessageItems([]);
         });
@@ -183,6 +188,11 @@ function useChatRoomController() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const chatBoxMargin = useMemo(
+    () => isMobile || isOpenMenuBar,
+    [isMobile, isOpenMenuBar],
+  );
+
   return {
     onSubmitChat,
     control,
@@ -196,6 +206,7 @@ function useChatRoomController() {
     memberList,
     isGroupChat,
     chatTitle,
+    chatBoxMargin,
   };
 }
 

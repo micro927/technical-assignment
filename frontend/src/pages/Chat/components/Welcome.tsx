@@ -13,19 +13,18 @@ function Welcome() {
   const { isMobile, setIsOpenMenuBar } =
     useOutletContext<LayoutOutletContext>();
   return (
-    <div className="h-full w-full pt-0 sm:pt-[62px]">
-      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-        <h1 className="app-title text-center text-5xl font-bold md:text-6xl">
-          Welcome
-        </h1>
-        <p className="text-base font-bold  sm:text-lg">
-          {userInformation?.name}
-        </p>
-        <div className="mt-8 flex w-full flex-col justify-center gap-2 px-16">
-          <p className="text-center font-semibold text-gray-600">
-            Click button to start your chat
+    <div className="h-full w-full  pt-0 sm:pt-[62px] dark:bg-slate-700">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-5">
+        <div>
+          <h1 className="app-title text-center text-5xl font-bold md:text-6xl">
+            Welcome
+          </h1>
+          <p className="text-center text-base font-bold  sm:text-lg">
+            {userInformation?.name}
           </p>
-          <div className="flex w-3/4 gap-4 self-center">
+        </div>
+        <div className="mt-8 flex w-full flex-col justify-center gap-2 px-16">
+          <div className="flex w-3/4 flex-row gap-4 self-center sm:flex-col lg:flex-row">
             {!isMobile ? (
               <>
                 <Button

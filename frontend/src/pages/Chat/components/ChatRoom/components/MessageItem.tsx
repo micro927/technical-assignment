@@ -19,7 +19,7 @@ function MessageItem({
     <div key={id} className="w-full">
       <div
         className={clsx(
-          'flex w-full items-center gap-1',
+          'flex w-full items-start gap-1',
           isMyMessage ? 'flex-row-reverse self-end' : 'self-start',
         )}
       >
@@ -28,7 +28,7 @@ function MessageItem({
           <div
             className={clsx(
               isMyMessage ? 'bg-blue-600' : 'bg-blue-800',
-              'rounded-2xl px-2 py-2 text-xs font-semibold text-gray-100 md:text-sm ',
+              'rounded-2xl px-2 py-2 text-sm font-semibold text-gray-100 md:text-sm ',
             )}
           >
             <p>{content}</p>
@@ -37,7 +37,7 @@ function MessageItem({
       </div>
       <p
         className={clsx(
-          'text-xxs pt-0.5 text-gray-300',
+          'text-xxs pt-0.5 text-gray-400 dark:text-gray-500',
           isMyMessage ? 'text-right' : 'text-left',
         )}
       >

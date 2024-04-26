@@ -1,12 +1,11 @@
 //NOTE: this file should sync with FRONTEND
 
 import { User } from './schema.js';
-import { BooleanString } from './app.js';
 
 export type LoginRequestBody = Pick<User, 'email' | 'password'>;
 
 export type UserInfoRequestParams = {
-  withFriends: BooleanString;
+  withFriends: boolean;
 };
 
 export type RefreshTokenRequestBody = {

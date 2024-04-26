@@ -6,6 +6,8 @@ import { createZodObjectSchema } from '@/utils/formValidators';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import chatService from '@/services/api/chat';
+import { useNavigate } from 'react-router-dom';
 
 function useAddFriendModalController({
   onClose,
@@ -14,10 +16,12 @@ function useAddFriendModalController({
   onClose: () => void;
   onAddFriendSuccess: (friends: UserBasicInfo[]) => void;
 }) {
+  const navigate = useNavigate();
   const [friendsSearchResult, setFriendsSearchResult] = useState<
     UserBasicInfo[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [addedSuccessIDs, setAddedSuccessIDs] = useState<string[]>([]);
   const searchFriendSchema = createZodObjectSchema('search');
   const addFriendsSchema = createZodObjectSchema('friendIDs');
 
@@ -65,7 +69,7 @@ function useAddFriendModalController({
         .then((data) => {
           setIsLoading(false);
           onAddFriendSuccess(data);
-          onClickClose();
+          setAddedSuccessIDs(friendIDs);
         })
         .catch(() => {
           setIsLoading(false);
@@ -77,11 +81,27 @@ function useAddFriendModalController({
     },
   );
 
+  const startChatWithFriend = (friendIDs: string[]) => {
+    setIsLoading(true);
+    chatService
+      .postCreateChat({ memberIDs: friendIDs })
+      .then(({ data }) => {
+        setIsLoading(false);
+        navigate(data.id);
+        onClickClose();
+      })
+      .catch(() => {
+        setIsLoading(false);
+        onClickClose();
+      });
+  };
+
   const onClickClose = () => {
+    onClose();
     searchForm.reset();
     addFriendsForm.reset();
     setFriendsSearchResult([]);
-    onClose();
+    setAddedSuccessIDs([]);
   };
 
   return {
@@ -92,6 +112,8 @@ function useAddFriendModalController({
     isLoading,
     onClickClose,
     friendsSearchResult,
+    addedSuccessIDs,
+    startChatWithFriend,
   };
 }
 

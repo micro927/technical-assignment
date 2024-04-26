@@ -47,14 +47,14 @@ function ChatRoom() {
       <div
         id="chatBox"
         ref={chatBoxRef}
-        className="mb-6 mt-10 h-full overflow-scroll px-6 py-8 pt-8 sm:pt-24"
+        className="mb-6 mt-10 flex h-full items-start overflow-scroll px-6 py-8 pt-8 sm:pt-24"
       >
         <div className=" flex w-full flex-col gap-1">
           {isLoading ? (
             <ChatItemLoadings />
           ) : (
-            messageItems.map((messageItem) => {
-              return <MessageItem {...messageItem} />;
+            messageItems.map((messageItem, key) => {
+              return <MessageItem key={key} {...messageItem} />;
             })
           )}
           {tempLastMessage && (
@@ -103,8 +103,9 @@ const ChatItemLoadings = () => {
   const order = [1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
   return (
     <>
-      {order.map((self) => (
+      {order.map((self, key) => (
         <Loading
+          key={key}
           className={clsx('h-10 w-2/5', self ? 'self-end' : 'self-start')}
         />
       ))}

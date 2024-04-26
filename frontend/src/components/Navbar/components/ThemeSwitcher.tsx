@@ -1,7 +1,7 @@
 import { ThemeContext } from '@/core/theme/Context';
 import { Theme } from '@/types/userInterface';
 import { useContext, useMemo } from 'react';
-import { HiMoon, HiSun, HiDeviceMobile } from 'react-icons/hi';
+import { HiMoon, HiSun, HiDesktopComputer } from 'react-icons/hi';
 
 function ThemeSwitcher() {
   const themeOptions: Theme[] = ['light', 'dark', 'system'];
@@ -14,7 +14,7 @@ function ThemeSwitcher() {
 
   const ThemeIcon = useMemo(() => {
     return userTheme === 'system'
-      ? HiDeviceMobile
+      ? HiDesktopComputer
       : userTheme === 'dark'
         ? HiMoon
         : HiSun;

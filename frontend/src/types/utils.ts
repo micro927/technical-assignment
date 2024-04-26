@@ -15,6 +15,8 @@ export type SocketEventListener<Data = BasicObject> = (
   listener: (data?: Data) => void,
 ) => void;
 
+export type SocketEventListenerStop = (socket: Socket) => void;
+
 export type SocketEventEmitter<Data = BasicObject> = (
   socket: Socket,
   data?: Data,
