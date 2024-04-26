@@ -74,10 +74,10 @@ zzz@example.com
 
 ### Frontend
 
-- __components__: base/reusable components
-- __core__: core modules (e.g., authentication)
-- __page__: page components related to `Router.tsx`
-- __service__: all functions that connect with services. If a service has changed, just configure it here.
+- `components`: base/reusable components
+- `core`: core modules (e.g., authentication)
+- `page`: page components related to `Router.tsx`
+- `service`: all functions that connect with services. If a service has changed, just configure it here.
 
 #### Component Structure
 
@@ -93,8 +93,8 @@ Login
 
 ### Backend
 
-- __controller__: all core logic, separated by the main route
-- __controller/websocket__: keeps all websocket listeners
-- __middleware__: all middleware (e.g., connect websocket/authorize)
+- `controller`: all core logic, separated by the main route
+- `controller/websocket`: keeps all websocket listeners
+- `middleware`: all middleware (e.g., connect websocket/authorize)
 
 I use MVC architecture, but as a role model, it may not 100% look like any MVC.
